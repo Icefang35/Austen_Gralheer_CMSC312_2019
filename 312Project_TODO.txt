@@ -1,0 +1,41 @@
+312 Project //TODO
+
+At least 4 program file templates
+ - use text files
+ - decide the process types (arbitrary) : Text Editor, Video Processor, Internet Browser, Video Game Runner, Debugger
+    - focus on each different process area (one focusing on I/O, one focusing on calculate, etc.)
+ - put calculate / I/O proportions into the templates
+ - put memory requirements
+ **All are arbitrary, but should make sense**
+
+-----
+
+make PCB class
+ - process state
+ - Pid, program counter, priority, job type
+ - record instructions
+ - ToString method
+
+make a process class
+ - contains PCB (accessor methods)
+ - ToString method
+
+make process generator class
+ - randomly select job type
+ - randomly select instruction count (lines in the process)
+    - randomly select a number of required cycles
+
+-----
+
+make scheduler class
+ - define scheduling algorithims
+ - organizes processes
+ - based on methods learned in class
+ - contains process lists
+
+-------
+
+dispatch class?
+ - changes the status of each process in real time
+
+build Main class
