@@ -4,13 +4,15 @@ public class ProcessControlBlock {
     int pId;
     int programCounter;
     int priority;
+    String[] instructions;
 
-    public ProcessControlBlock(String pState, String jType, int pId, int pCounter, int priority){
+    public ProcessControlBlock(String pState, String jType, String[] instructs){
         processState = pState;
         jobType = jType;
-        this. pId = pId;
-        programCounter = pCounter;
-        this.priority = priority;
+        instructions = instructs;
+        //this.pId = pId;
+        //programCounter = pCounter;
+        //this.priority = priority;
     }
 
     public String ToString(){

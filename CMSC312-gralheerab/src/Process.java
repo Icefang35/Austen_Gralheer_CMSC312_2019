@@ -1,12 +1,14 @@
 public class Process {
-    ProcessControlBlock pcb;
+    ProcessControlBlock PCB;
 
-    public Process(){
-
+    public Process(String jType, String[] instructs){
+        PCB = new ProcessControlBlock("new", jType, instructs);
     }
 
     public String ToString(){
-        String process = pcb.ToString();
+        String process = PCB.ToString();
         return process;
     }
+
+
 }

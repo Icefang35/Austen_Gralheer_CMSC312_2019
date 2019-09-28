@@ -3,9 +3,11 @@ import java.util.*;
 public class ProcessGenerator {
     int processCount;
     Random rand = new Random();
+    Process[] processes;
 
     public ProcessGenerator(int count){
         processCount = count;
+        processes = new Process[processCount];
     }
 
     public void createProcesses(){
@@ -14,8 +16,9 @@ public class ProcessGenerator {
         Scanner templateScanner;
         int percentCalculate = 0;
         int percentIO = 0;
+        String[] instructions;
 
-        while(processCount > 0){
+        for(int i = 0; i < processCount; i++){
             switch (jobType){
                 case 1:
                     job = "Debugger";
@@ -46,13 +49,12 @@ public class ProcessGenerator {
                 }
             }
 
-            createInstructions(percentCalculate, percentIO);
-
-            processCount --;
+            instructions = createInstructions(percentCalculate, percentIO);
+            processes[i] = new Process(job, instructions);
         }
     }
 
-    public void createInstructions(int calculate, int IO) {
+    public String[] createInstructions(int calculate, int IO) {
         int instructionCount = rand.nextInt(10);
         int current = 0;
         int percentInstruction;
@@ -71,5 +73,7 @@ public class ProcessGenerator {
 
             instructions[current] = instructionType;
         }
+
+        return instructions;
     }
 }
