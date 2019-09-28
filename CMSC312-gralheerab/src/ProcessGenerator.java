@@ -6,8 +6,14 @@ public class ProcessGenerator {
 
     public ProcessGenerator(int count){
         processCount = count;
+    }
+
+    public void createProcesses(){
         int jobType = rand.nextInt(5);
-        String job;
+        String job = "";
+        Scanner templateScanner;
+        int percentCalculate = 0;
+        int percentIO = 0;
 
         while(processCount > 0){
             switch (jobType){
@@ -30,24 +36,40 @@ public class ProcessGenerator {
                     break;
             }
 
+            templateScanner = new Scanner("Program Templates/" + job + ".txt");
+            while(templateScanner.hasNextLine()){
+                if(templateScanner.nextLine().contains("CALCULATE")){
+                    percentCalculate = templateScanner.nextInt();
+                }
+                else if(templateScanner.nextLine().contains("I/0")){
+                    percentIO = templateScanner.nextInt();
+                }
+            }
+
+            createInstructions(percentCalculate, percentIO);
+
             processCount --;
         }
     }
 
-    public void createProcesses(){
-
-    }
-
-    public void createInstructions() {
+    public void createInstructions(int calculate, int IO) {
         int instructionCount = rand.nextInt(10);
-        int instructionPossible;
+        int current = 0;
+        int percentInstruction;
+        String instructionType = "";
+        String[] instructions = new String[instructionCount];
 
         for(int i = instructionCount; i > 0; i--){
-            instructionPossible = rand.nextInt(100);
+            percentInstruction = rand.nextInt(100);
 
-            switch(instructionPossible){
-
+            if(percentInstruction <= calculate){
+                instructionType = "Calculate";
             }
+            else if(percentInstruction > calculate && percentInstruction <= (calculate + IO)){
+                instructionType = "I/O";
+            }
+
+            instructions[current] = instructionType;
         }
     }
 }
