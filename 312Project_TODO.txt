@@ -1,6 +1,6 @@
 312 Project //TODO
 
-At least 4 program file templates
+At least 4 program file templates - done?
  - use text files
  - decide the process types (arbitrary) : Text Editor, Video Processor, Internet Browser, Video Game Runner, Debugger
     - focus on each different process area (one focusing on I/O, one focusing on calculate, etc.)
