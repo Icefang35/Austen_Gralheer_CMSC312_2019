@@ -15,8 +15,25 @@ public class ProcessControlBlock {
         //this.priority = priority;
     }
 
-    public String ToString(){
-        String process = "";
+    public String toString(){
+        int numCalculate = 0;
+        int numIO = 0;
+
+        //TODO: add pId, program counter, and priority
+        String process =jobType + "\n" + processState + "\n";
+
+        for(int i = 0; i < instructions.length; i++){
+            if(instructions[i].equals("Calculate")){
+                numCalculate++;
+            }
+            else if(instructions[i].equals("I/O")){
+                numIO++;
+            }
+        }
+        process += "Instructions: " + instructions.length + "\n";
+        process += "CALCULATE: " + numCalculate + "\n";
+        process += "I/0: " + numIO + "\n";
+
         return process;
     }
 }

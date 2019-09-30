@@ -5,8 +5,8 @@ public class Process {
         PCB = new ProcessControlBlock("new", jType, instructs);
     }
 
-    public String ToString(){
-        String process = PCB.ToString();
+    public String toString(){
+        String process = PCB.toString();
         return process;
     }
 

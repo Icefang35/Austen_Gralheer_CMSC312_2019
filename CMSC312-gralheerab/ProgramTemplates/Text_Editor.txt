@@ -1,4 +1,6 @@
 Name: Text Editor
 
-CALCULATE 60
-I/0 40
+CALCULATE
+60
+I/0
+40

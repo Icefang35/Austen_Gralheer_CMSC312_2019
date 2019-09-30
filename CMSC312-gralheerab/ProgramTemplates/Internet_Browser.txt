@@ -1,4 +1,6 @@
 Name: Internet Browser
 
-CALCULATE 35
-I/0 65
+CALCULATE
+35
+I/0
+65

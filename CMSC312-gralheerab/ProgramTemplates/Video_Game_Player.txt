@@ -1,4 +1,6 @@
 Name: Video Game Player
 
-CALCULATE 50
-I/0 50
+CALCULATE
+50
+I/0
+50
