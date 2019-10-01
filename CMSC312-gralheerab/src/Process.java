@@ -1,7 +1,7 @@
 public class Process {
     ProcessControlBlock PCB;
 
-    public Process(String jType, String[] instructs){
+    public Process(String jType, Instruction[] instructs){
         PCB = new ProcessControlBlock("new", jType, instructs);
     }
 

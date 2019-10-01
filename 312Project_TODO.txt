@@ -1,6 +1,6 @@
 312 Project //TODO
 
-At least 4 program file templates - done?
+At least 4 program file templates - done
  - use text files
  - decide the process types (arbitrary) : Text Editor, Video Processor, Internet Browser, Video Game Runner, Debugger
     - focus on each different process area (one focusing on I/O, one focusing on calculate, etc.)
@@ -10,17 +10,17 @@ At least 4 program file templates - done?
 
 -----
 
-make PCB class
+make PCB class - done
  - process state
  - Pid, program counter, priority, job type
  - record instructions
  - ToString method
 
-make a process class
+make a process class - done
  - contains PCB (accessor methods)
  - ToString method
 
-make process generator class
+make process generator class - done
  - randomly select job type
  - randomly select instruction count (lines in the process)
     - randomly select a number of required cycles
@@ -35,7 +35,7 @@ make scheduler class
 
 -------
 
-dispatch class?
+dispatch class
  - changes the status of each process in real time
 
-build Main class
+build Main class - in progress

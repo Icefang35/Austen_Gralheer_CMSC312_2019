@@ -1,6 +1,6 @@
 Name: Debugger
 
 CALCULATE
-85
+85 200 250
 I/0
-15
+15 15 20

@@ -1,12 +1,13 @@
 public class ProcessControlBlock {
     String processState;
     String jobType;
+    int runtime;
     int pId;
     int programCounter;
     int priority;
-    String[] instructions;
+    Instruction[] instructions;
 
-    public ProcessControlBlock(String pState, String jType, String[] instructs){
+    public ProcessControlBlock(String pState, String jType, Instruction[] instructs){
         processState = pState;
         jobType = jType;
         instructions = instructs;

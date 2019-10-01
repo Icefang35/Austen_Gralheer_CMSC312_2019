@@ -1,6 +1,6 @@
 Name: Video Processor
 
 CALCULATE
-55
+55 75 200
 I/0
-45
+45 25 45
