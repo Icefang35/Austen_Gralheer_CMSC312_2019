@@ -7,10 +7,11 @@ public class ProcessControlBlock {
     int priority;
     Instruction[] instructions;
 
-    public ProcessControlBlock(String pState, String jType, Instruction[] instructs){
+    public ProcessControlBlock(String pState, String jType, Instruction[] instructs, int time){
         processState = pState;
         jobType = jType;
         instructions = instructs;
+        runtime = time;
         //this.pId = pId;
         //programCounter = pCounter;
         //this.priority = priority;
@@ -24,13 +25,15 @@ public class ProcessControlBlock {
         String process =jobType + "\n" + processState + "\n";
 
         for(int i = 0; i < instructions.length; i++){
-            if(instructions[i].equals("Calculate")){
+            String instructType = instructions[i].type;
+            if(instructType.equals("Calculate")){
                 numCalculate++;
             }
-            else if(instructions[i].equals("I/O")){
+            else if(instructType.equals("I/O")){
                 numIO++;
             }
         }
+        process += "Runtime: " + runtime + "\n";
         process += "Instructions: " + instructions.length + "\n";
         process += "CALCULATE: " + numCalculate + "\n";
         process += "I/0: " + numIO + "\n";

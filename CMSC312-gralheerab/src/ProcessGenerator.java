@@ -7,6 +7,7 @@ public class ProcessGenerator {
     public ProcessGenerator(){
     }
 
+    int runtime;
     public Process[] createProcesses(int processCount) throws FileNotFoundException {
         Process[] processes = new Process[processCount];
         String job = "";
@@ -66,7 +67,8 @@ public class ProcessGenerator {
 
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin);
-            processes[i] = new Process(type, instructions);
+            processes[i] = new Process(type, instructions, runtime);
+            runtime = 0;
         }
 
         return processes;
@@ -87,10 +89,12 @@ public class ProcessGenerator {
             if(percentInstruction <= calculate){
                 instructionType = "Calculate";
                 instructionTime = rand.nextInt(randCalc);
+                runtime += instructionTime;
             }
             else if(percentInstruction > calculate && percentInstruction <= (calculate + IO)){
                 instructionType = "I/O";
                 instructionTime = rand.nextInt(randIO);
+                runtime += instructionTime;
             }
 
             instructions[i] = new Instruction(instructionType, instructionTime);

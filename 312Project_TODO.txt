@@ -10,17 +10,17 @@ At least 4 program file templates - done
 
 -----
 
-make PCB class - done
+make PCB class - Done
  - process state
  - Pid, program counter, priority, job type
  - record instructions
  - ToString method
 
-make a process class - done
+make a process class - Done
  - contains PCB (accessor methods)
  - ToString method
 
-make process generator class - done
+make process generator class - Done
  - randomly select job type
  - randomly select instruction count (lines in the process)
     - randomly select a number of required cycles
@@ -35,7 +35,7 @@ make scheduler class
 
 -------
 
-dispatch class
+dispatch class?
  - changes the status of each process in real time
 
-build Main class - in progress
+build Main class
