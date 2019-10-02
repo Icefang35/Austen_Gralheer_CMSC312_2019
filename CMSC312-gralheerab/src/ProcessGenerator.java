@@ -88,12 +88,12 @@ public class ProcessGenerator {
 
             if(percentInstruction <= calculate){
                 instructionType = "Calculate";
-                instructionTime = rand.nextInt(randCalc);
+                instructionTime = rand.nextInt(randCalc) + calcMin;
                 runtime += instructionTime;
             }
             else if(percentInstruction > calculate && percentInstruction <= (calculate + IO)){
                 instructionType = "I/O";
-                instructionTime = rand.nextInt(randIO);
+                instructionTime = rand.nextInt(randIO) + IOMin;
                 runtime += instructionTime;
             }
 
