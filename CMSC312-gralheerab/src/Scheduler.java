@@ -19,7 +19,8 @@ public class Scheduler {
                 }
             }
             scheduled[i] = unScheduled[shortIndex];
-            unScheduled[shortIndex] = new Process("invalid", dummyInstructs, 10000);
+            scheduled[i].PCB.processState = "ready";
+            unScheduled[shortIndex] = new Process("invalid", dummyInstructs, 10000, 1);
         }
         return scheduled;
     }

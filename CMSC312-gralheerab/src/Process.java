@@ -1,8 +1,8 @@
 public class Process {
     ProcessControlBlock PCB;
 
-    public Process(String jType, Instruction[] instructs, int runtime){
-        PCB = new ProcessControlBlock("new", jType, instructs, runtime);
+    public Process(String jType, Instruction[] instructs, int runtime, int pID){
+        PCB = new ProcessControlBlock("new", jType, instructs, runtime, pID);
     }
 
     public String toString(){

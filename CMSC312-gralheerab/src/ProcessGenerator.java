@@ -19,6 +19,7 @@ public class ProcessGenerator {
         int percentIO = 0;
         int IOMax = 0;
         int IOMin = 0;
+        int pID = 1;
         Instruction[] instructions;
 
         for(int i = 0; i < processCount; i++){
@@ -67,7 +68,8 @@ public class ProcessGenerator {
 
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin);
-            processes[i] = new Process(type, instructions, runtime);
+            processes[i] = new Process(type, instructions, runtime, pID);
+            pID++;
             runtime = 0;
         }
 
