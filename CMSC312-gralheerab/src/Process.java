@@ -10,5 +10,12 @@ public class Process {
         return process;
     }
 
+    public int getRuntime(){
+        return PCB.runtime;
+    }
+
+    public int getPID(){
+        return PCB.pId;
+    }
 
 }

@@ -1,5 +1,7 @@
 public class Scheduler {
 
+    Dispatcher dispatch = new Dispatcher();
+
     public Scheduler(){
 
     }
@@ -12,16 +14,16 @@ public class Scheduler {
         for(int i = 0; i < scheduled.length; i++){
             shortTime = 9000;
             for(int j = 0; j < unScheduled.length; j++){
-                ProcessControlBlock curPCB = unScheduled[j].PCB;
-                if(curPCB.runtime < shortTime){
-                    shortTime = curPCB.runtime;
+                if(unScheduled[j].getRuntime() < shortTime){
+                    shortTime = unScheduled[j].getRuntime();
                     shortIndex = j;
                 }
             }
             scheduled[i] = unScheduled[shortIndex];
-            scheduled[i].PCB.processState = "ready";
+            dispatch.setState(scheduled[i].PCB, "ready");
             unScheduled[shortIndex] = new Process("invalid", dummyInstructs, 10000, 1);
         }
         return scheduled;
     }
+
 }
