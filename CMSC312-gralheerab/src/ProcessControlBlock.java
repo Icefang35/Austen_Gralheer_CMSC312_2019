@@ -1,3 +1,4 @@
+//Class for individual ProcessControlBlocks containing all of the information for individual processes
 public class ProcessControlBlock {
     String processState;
     String jobType;
@@ -21,7 +22,7 @@ public class ProcessControlBlock {
         int numCalculate = 0;
         int numIO = 0;
 
-        //TODO: add pId, program counter, and priority
+        //TODO: add program counter, and priority
         String process =jobType + " " + pId + "\n" + processState + "\n";
 
         for(int i = 0; i < instructions.length; i++){

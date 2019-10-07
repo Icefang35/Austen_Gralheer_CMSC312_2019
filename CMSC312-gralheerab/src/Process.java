@@ -1,3 +1,4 @@
+//Class for each individual process, containing a ProcessControlBlock as well as some accessor methods for variables of the ProcessControlBlock
 public class Process {
     ProcessControlBlock PCB;
 

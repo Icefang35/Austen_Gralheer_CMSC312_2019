@@ -1,11 +1,12 @@
+//class for the process scheduler that sorts the process based on scheduling algorithms
 public class Scheduler {
 
     Dispatcher dispatch = new Dispatcher();
 
     public Scheduler(){
-
     }
 
+    //Sorts the process using the shortest job first algorithm
     public Process[] shortJobFirst(Process[] unScheduled){
         Process[] scheduled = new Process[unScheduled.length];
         Instruction[] dummyInstructs = new Instruction[1];

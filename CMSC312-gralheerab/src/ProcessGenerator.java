@@ -22,6 +22,7 @@ public class ProcessGenerator {
         int pID = 1;
         Instruction[] instructions;
 
+        //randomly selects the job type, amount of instructions, and type of instructions for each process, as well as finding the correct template file
         for(int i = 0; i < processCount; i++){
             int jobType = rand.nextInt(4) + 1;
             switch (jobType){
@@ -52,6 +53,7 @@ public class ProcessGenerator {
             File jobTemplate = new File(job);
             templateScanner = new Scanner(jobTemplate);
 
+            //reads the template file and pulls out the percent of each instruction type that each process type can have, as well as the maximum and minimum run times for each instruction
             while(templateScanner.hasNextLine()){
                 String curLine = templateScanner.nextLine();
                 if(curLine.contains("CALCULATE")){
@@ -76,6 +78,7 @@ public class ProcessGenerator {
         return processes;
     }
 
+    //randomly sets the instruction type and runtime for each individual instruction
     public Instruction[] createInstructions(int calculate, int IO, int calcMax, int calcMin, int IOMax, int IOMin) {
         int instructionCount = rand.nextInt(9) + 1;
         int percentInstruction;

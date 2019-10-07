@@ -1,3 +1,4 @@
+//class for individual instructions containing name and runtime for each
 public class Instruction {
     String type;
     int time;
@@ -7,7 +8,7 @@ public class Instruction {
         this.time = time;
     }
 
-//    public String toString(){
-//        return
-//    }
+    public String toString(){
+        return(type + " Runtime: " + time);
+    }
 }
