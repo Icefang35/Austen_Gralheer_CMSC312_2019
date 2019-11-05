@@ -12,6 +12,7 @@ public class ProcessGenerator {
         Process[] processes = new Process[processCount];
         String job = "";
         String type = "";
+        String criticalSec = "";
         Scanner templateScanner;
         int percentCalculate = 0;
         int calcMax = 0;
@@ -66,10 +67,19 @@ public class ProcessGenerator {
                     IOMin = templateScanner.nextInt();
                     IOMax = templateScanner.nextInt();
                 }
+                else if(curLine.contains("Early")){
+                    criticalSec = "Early";
+                }
+                else if(curLine.contains("Middle")){
+                    criticalSec = "Middle";
+                }
+                else if(curLine.contains("Late")){
+                    criticalSec = "Late";
+                }
             }
 
             templateScanner.close();
-            instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin);
+            instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin, criticalSec);
             processes[i] = new Process(type, instructions, runtime, pID);
             pID++;
             runtime = 0;
@@ -79,14 +89,26 @@ public class ProcessGenerator {
     }
 
     //randomly sets the instruction type and runtime for each individual instruction
-    public Instruction[] createInstructions(int calculate, int IO, int calcMax, int calcMin, int IOMax, int IOMin) {
+    public Instruction[] createInstructions(int calculate, int IO, int calcMax, int calcMin, int IOMax, int IOMin, String criticalSec) {
         int instructionCount = rand.nextInt(9) + 1;
         int percentInstruction;
         String instructionType = "";
         int randCalc = calcMax - calcMin;
         int randIO = IOMax - IOMin;
         int instructionTime = 0;
+        int criticalIndex = 0;
+        boolean isCritical = false;
         Instruction[] instructions = new Instruction[instructionCount];
+
+        if(criticalSec.contains("Early")){
+            criticalIndex = instructionCount/4;
+        }
+        else if(criticalSec.contains("Middle")){
+            criticalIndex = instructionCount/2;
+        }
+        else if(criticalSec.contains("Late")){
+            criticalIndex = (instructionCount/4) * 3;
+        }
 
         for(int i = 0; i < instructionCount; i++){
             percentInstruction = rand.nextInt(99) + 1;
@@ -102,7 +124,14 @@ public class ProcessGenerator {
                 runtime += instructionTime;
             }
 
-            instructions[i] = new Instruction(instructionType, instructionTime);
+            if(i == criticalIndex){
+                isCritical = true;
+            }
+            else{
+                isCritical = false;
+            }
+
+            instructions[i] = new Instruction(instructionType, instructionTime, isCritical);
         }
 
         return instructions;

@@ -42,7 +42,7 @@ build Main class
 
 ----------
 
-Add critical sections to your instruction sets
+Add critical sections to your instruction sets - DONE
  - either as a new instruction or tagged onto an existing one
 
 Add semaphore / mutex lock / monitor to your code when "procesing" a critical section
