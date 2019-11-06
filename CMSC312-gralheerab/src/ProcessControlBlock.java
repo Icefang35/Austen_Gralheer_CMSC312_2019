@@ -3,16 +3,18 @@ public class ProcessControlBlock {
     String processState;
     String jobType;
     int runtime;
+    int memory;
     int pId;
     int programCounter;
     int priority;
     Instruction[] instructions;
 
-    public ProcessControlBlock(String pState, String jType, Instruction[] instructs, int time, int pID){
+    public ProcessControlBlock(String pState, String jType, Instruction[] instructs, int time, int mem, int pID){
         processState = pState;
         jobType = jType;
         instructions = instructs;
         runtime = time;
+        memory = mem;
         pId = pID;
         //programCounter = pCounter;
         //this.priority = priority;

@@ -55,7 +55,7 @@ Add memory requirements to processes
  - scaled with process type
  - num pages in RAM required to run
 
-Implement frames
+Implement frames - DONE
  - either as subclass or independent class
  - size
  - physical address
