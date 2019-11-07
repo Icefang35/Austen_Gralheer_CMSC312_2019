@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 //class for the process dispatcher that runs and changes the state of each process
 public class Dispatcher {
 
@@ -7,11 +9,11 @@ public class Dispatcher {
     }
 
     //"runs" each scheduled job by sleeping for the total runtime of each job job
-    public static void runJobs(Process[] processes) throws InterruptedException{
+    public static void runJobs(ArrayList<Process> processes) throws InterruptedException{
         boolean mutexLock = false;
-        for(int i = 0; i < processes.length; i++){
-            Instruction[] instructions = processes[i].PCB.instructions;
-            setState(processes[i].PCB, "running");
+        for(int i = 0; i < processes.size(); i++){
+            Instruction[] instructions = processes.get(i).PCB.instructions;
+            setState(processes.get(i).PCB, "running");
             System.out.println("Running job " + i);
             for(int j = 0; j < instructions.length; j++){
                 if(instructions[j].isCritical){
@@ -23,8 +25,8 @@ public class Dispatcher {
                     Thread.sleep(instructions[j].time);
                 }
             }
-            setState(processes[i].PCB, "terminated");
-            System.out.print(processes[i].toString());
+            setState(processes.get(i).PCB, "terminated");
+            System.out.print(processes.get(i).toString());
         }
 
         System.out.println("'runJobs' finished");

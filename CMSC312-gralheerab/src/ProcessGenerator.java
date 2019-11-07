@@ -13,6 +13,7 @@ public class ProcessGenerator {
     int memory;
     public ArrayList<Process> createProcesses(int processCount) throws FileNotFoundException {
         ArrayList<Process> processes = new ArrayList<Process>();
+        Process process;
         String job = "";
         String type = "";
         String criticalSec = "";
@@ -83,11 +84,12 @@ public class ProcessGenerator {
 
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin, criticalSec);
+            process = new Process(type, instructions, runtime, memory, pID);
+            scheduler.shortJobFirst(process);
             processes.add(new Process(type, instructions, runtime, memory, pID));
             pID++;
             runtime = 0;
         }
-
         return processes;
     }
 

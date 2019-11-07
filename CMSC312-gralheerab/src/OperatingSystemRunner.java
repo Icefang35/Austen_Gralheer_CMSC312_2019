@@ -11,11 +11,12 @@ public class OperatingSystemRunner {
         Scheduler jobScheduler = new Scheduler();
         Dispatcher jobDispatcher = new Dispatcher();
         ArrayList<Process> processes = generator.createProcesses(processCount);
-        Process[] scheduledJobs = jobScheduler.shortJobFirst(processes);
+        //Process[] scheduledJobs = jobScheduler.shortJobFirst(processes);
+        ArrayList<Process> scheduledJobs = jobScheduler.getSchedule();
 
         //prints out pID for each job in the order they have been scheduled
         for(int i = 0; i < processCount; i++){
-            Process current = scheduledJobs[i];
+            Process current = scheduledJobs.get(i);
             System.out.println(current.getPID());
         }
 
