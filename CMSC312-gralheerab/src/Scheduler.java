@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 //class for the process scheduler that sorts the process based on scheduling algorithms
 public class Scheduler {
 
@@ -7,22 +9,24 @@ public class Scheduler {
     }
 
     //Sorts the process using the shortest job first algorithm
-    public Process[] shortJobFirst(Process[] unScheduled){
-        Process[] scheduled = new Process[unScheduled.length];
+    public Process[] shortJobFirst(ArrayList<Process> unScheduled){
+        Process[] scheduled = new Process[unScheduled.size()];
         Instruction[] dummyInstructs = new Instruction[1];
         int shortTime;
         int shortIndex = -1;
-        for(int i = 0; i < scheduled.length; i++){
+        int i = 0;
+        while(unScheduled.size() > 0){
             shortTime = 9000;
-            for(int j = 0; j < unScheduled.length; j++){
-                if(unScheduled[j].getRuntime() < shortTime){
-                    shortTime = unScheduled[j].getRuntime();
+            for(int j = 0; j < unScheduled.size(); j++){
+                if(unScheduled.get(j).getRuntime() < shortTime){
+                    shortTime = unScheduled.get(j).getRuntime();
                     shortIndex = j;
                 }
             }
-            scheduled[i] = unScheduled[shortIndex];
+            scheduled[i] = unScheduled.get(shortIndex);
             dispatch.setState(scheduled[i].PCB, "ready");
-            unScheduled[shortIndex] = new Process("invalid", dummyInstructs, 10000, 1);
+            unScheduled.remove(shortIndex);
+            i++;
         }
         return scheduled;
     }

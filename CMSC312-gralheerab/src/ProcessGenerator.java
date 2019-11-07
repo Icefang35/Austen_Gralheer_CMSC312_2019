@@ -4,13 +4,15 @@ import java.util.*;
 
 public class ProcessGenerator {
     Random rand = new Random();
+    Scheduler scheduler = new Scheduler();
+
     public ProcessGenerator(){
     }
 
     int runtime;
     int memory;
-    public Process[] createProcesses(int processCount) throws FileNotFoundException {
-        Process[] processes = new Process[processCount];
+    public ArrayList<Process> createProcesses(int processCount) throws FileNotFoundException {
+        ArrayList<Process> processes = new ArrayList<Process>();
         String job = "";
         String type = "";
         String criticalSec = "";
@@ -81,7 +83,7 @@ public class ProcessGenerator {
 
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin, criticalSec);
-            processes[i] = new Process(type, instructions, runtime, memory, pID);
+            processes.add(new Process(type, instructions, runtime, memory, pID));
             pID++;
             runtime = 0;
         }

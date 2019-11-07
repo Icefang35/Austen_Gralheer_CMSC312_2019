@@ -10,7 +10,7 @@ public class OperatingSystemRunner {
         ProcessGenerator generator = new ProcessGenerator();
         Scheduler jobScheduler = new Scheduler();
         Dispatcher jobDispatcher = new Dispatcher();
-        Process[] processes = generator.createProcesses(processCount);
+        ArrayList<Process> processes = generator.createProcesses(processCount);
         Process[] scheduledJobs = jobScheduler.shortJobFirst(processes);
 
         //prints out pID for each job in the order they have been scheduled
