@@ -35,7 +35,7 @@ make scheduler class
 
 ----------
 
-dispatch class?
+dispatch class
  - changes the status of each process in real time
 
 build Main class
@@ -45,7 +45,7 @@ build Main class
 Add critical sections to your instruction sets - DONE
  - either as a new instruction or tagged onto an existing one
 
-Add semaphore / mutex lock / monitor to your code when "procesing" a critical section
+Add semaphore / mutex lock / monitor to your code when "procesing" a critical section - DONE?
  - what happens if a "running" critical section is trying to be interupted?
 
 ----------
@@ -55,7 +55,7 @@ Add memory requirements to processes
  - scaled with process type
  - num pages in RAM required to run
 
-Implement frames - DONE
+Implement frames - DONE, kind of
  - either as subclass or independent class
  - size
  - physical address
