@@ -31,4 +31,14 @@ public class Dispatcher {
 
         System.out.println("'runJobs' finished");
     }
+
+    public static ArrayList<Process> checkMemory(ArrayList<Process> processes, PhysicalMemory physical){
+        ProcessControlBlock PCB;
+        for (int i = 0; i < processes.size(); i++){
+            PCB = processes.get(i).PCB;
+            if (PCB.memory > physical.CheckMemory()){
+                physical.AllocateFrames(PCB.memory, PCB.pId);
+            }
+        }
+    }
 }

@@ -80,7 +80,7 @@ Implement Page Table for processes
 Implement MMU
  - Manages physical memory and virtual memory
  - Contains memory map
- - map of all logical address spaces to physical ones
+    - map of all logical address spaces to physical ones
 
 Update scheduling algorithm to respect memory requirements
  - processes only go to "ready" if there is enough free memory for them
