@@ -15,6 +15,10 @@ public class Process {
         return PCB.runtime;
     }
 
+    public int getMemory() {
+        return PCB.memory;
+    }
+
     public int getPID(){
         return PCB.pId;
     }
