@@ -23,4 +23,8 @@ public class Process {
         return PCB.pId;
     }
 
+    public String getState(){
+        return PCB.processState;
+    }
+
 }
