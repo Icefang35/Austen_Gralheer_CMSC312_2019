@@ -5,6 +5,7 @@ import java.util.*;
 public class ProcessGenerator extends Thread{
     Random rand = new Random();
     Scheduler scheduler = new Scheduler();
+    public int processCount;
 
     public ProcessGenerator(){
     }
@@ -17,14 +18,14 @@ public class ProcessGenerator extends Thread{
             createProcesses();
         }
         catch(Exception e){
-
+            System.out.println("Process Creation Failed");
         }
     }
 
     public ArrayList<Process> createProcesses() throws FileNotFoundException, InterruptedException {
-        Scanner user = new Scanner(System.in);
-        System.out.print("Number of processes to generate: ");
-        int processCount = user.nextInt();
+        //Scanner user = new Scanner(System.in);
+        //System.out.print("Number of processes to generate: ");
+        //processCount = user.nextInt();
         //System.out.println("got count");
         ArrayList<Process> processes = new ArrayList<Process>();
         Process process;
@@ -106,7 +107,8 @@ public class ProcessGenerator extends Thread{
             runtime = 0;
             memory = 0;
         }
-        jobDispatcher.runJobs(scheduler.getSchedule());
+        jobDispatcher.processes = scheduler.getSchedule();
+        jobDispatcher.runJobs();
         return processes;
     }
 

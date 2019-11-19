@@ -4,12 +4,13 @@ import java.util.*;
 public class OperatingSystemRunner {
 
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
-//        Scanner user = new Scanner(System.in);
-//        System.out.print("Number of processes to generate: ");
-//        int processCount = user.nextInt();
         ProcessGenerator generator = new ProcessGenerator();
         Scheduler jobScheduler = new Scheduler();
         Dispatcher jobDispatcher = new Dispatcher();
+        Scanner user = new Scanner(System.in);
+        System.out.print("Number of processes to generate: ");
+        generator.processCount = user.nextInt();
+//        int processCount = user.nextInt();
         generator.start();
         //Process[] scheduledJobs = jobScheduler.shortJobFirst(processes);
         ArrayList<Process> scheduledJobs = jobScheduler.getSchedule();
@@ -21,7 +22,7 @@ public class OperatingSystemRunner {
         }
 
         //jobDispatcher.runJobs(scheduledJobs);
-//        user.close();
+        user.close();
     }
 }
 

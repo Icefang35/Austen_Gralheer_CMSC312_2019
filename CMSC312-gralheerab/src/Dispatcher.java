@@ -3,13 +3,24 @@ import java.util.ArrayList;
 //class for the process dispatcher that runs and changes the state of each process
 public class Dispatcher extends Thread {
 
+    public static ArrayList<Process> processes = new ArrayList<Process>();
+
+    public void run(){
+        try{
+            runJobs();
+        }
+        catch(Exception e){
+
+        }
+    }
+
     //changes the state of individual jobs
     public static void setState (ProcessControlBlock PCB, String newState){
         PCB.processState = newState;
     }
 
     //"runs" each scheduled job by sleeping for the total runtime of each job job
-    public static void runJobs(ArrayList<Process> processes) throws InterruptedException{
+    public static void runJobs() throws InterruptedException{
         boolean mutexLock = false;
         for(int i = 0; i < processes.size(); i++){
             //if(processes.get(i).getState().contains("ready")) {
