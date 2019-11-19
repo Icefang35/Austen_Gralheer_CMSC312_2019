@@ -2,7 +2,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class ProcessGenerator {
+public class ProcessGenerator extends Thread{
     Random rand = new Random();
     Scheduler scheduler = new Scheduler();
 
@@ -11,7 +11,21 @@ public class ProcessGenerator {
 
     int runtime;
     int memory;
-    public ArrayList<Process> createProcesses(int processCount) throws FileNotFoundException {
+
+    public void run(){
+        try{
+            createProcesses();
+        }
+        catch(Exception e){
+
+        }
+    }
+
+    public ArrayList<Process> createProcesses() throws FileNotFoundException, InterruptedException {
+        Scanner user = new Scanner(System.in);
+        System.out.print("Number of processes to generate: ");
+        int processCount = user.nextInt();
+        //System.out.println("got count");
         ArrayList<Process> processes = new ArrayList<Process>();
         Process process;
         String job = "";
@@ -26,6 +40,7 @@ public class ProcessGenerator {
         int IOMin = 0;
         int pID = 1;
         Instruction[] instructions;
+        Dispatcher jobDispatcher = new Dispatcher();
 
         //randomly selects the job type, amount of instructions, and type of instructions for each process, as well as finding the correct template file
         for(int i = 0; i < processCount; i++){
@@ -89,7 +104,9 @@ public class ProcessGenerator {
             processes.add(new Process(type, instructions, runtime, memory, pID));
             pID++;
             runtime = 0;
+            memory = 0;
         }
+        jobDispatcher.runJobs(scheduler.getSchedule());
         return processes;
     }
 

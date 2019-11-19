@@ -20,6 +20,7 @@ public class Scheduler {
             for(int j = 0; j < scheduled.size(); j++){
                 if(scheduled.get(j).getRuntime() > unScheduled.getRuntime()){
                     insertIndex = j;
+                    break;
                 }
             }
             if(insertIndex >= 0) {

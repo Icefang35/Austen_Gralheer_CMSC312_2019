@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 //class for the process dispatcher that runs and changes the state of each process
-public class Dispatcher {
+public class Dispatcher extends Thread {
 
     //changes the state of individual jobs
     public static void setState (ProcessControlBlock PCB, String newState){

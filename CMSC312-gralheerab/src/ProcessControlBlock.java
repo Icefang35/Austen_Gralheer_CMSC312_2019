@@ -37,6 +37,7 @@ public class ProcessControlBlock {
             }
         }
         process += "Runtime: " + runtime + "\n";
+        process += "Memory: " + memory + "\n";
         process += "Instructions: " + instructions.length + "\n";
         process += "CALCULATE: " + numCalculate + "\n";
         process += "I/0: " + numIO + "\n" + "\n";
