@@ -22,6 +22,12 @@ public class Dispatcher extends Thread {
     //"runs" each scheduled job by sleeping for the total runtime of each job job
     public static void runJobs() throws InterruptedException{
         boolean mutexLock = false;
+
+        for(int i = 0; i < processes.size(); i++){
+            Process current = processes.get(i);
+            System.out.println(current.getPID() + " - " + current.getRuntime());
+        }
+
         for(int i = 0; i < processes.size(); i++){
             //if(processes.get(i).getState().contains("ready")) {
                 Instruction[] instructions = processes.get(i).PCB.instructions;

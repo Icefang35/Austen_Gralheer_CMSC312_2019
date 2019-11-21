@@ -107,6 +107,7 @@ public class ProcessGenerator extends Thread{
             runtime = 0;
             memory = 0;
         }
+
         jobDispatcher.processes = scheduler.getSchedule();
         jobDispatcher.runJobs();
         return processes;
