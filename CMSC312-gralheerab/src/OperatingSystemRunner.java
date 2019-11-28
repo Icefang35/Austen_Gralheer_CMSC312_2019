@@ -4,9 +4,9 @@ import java.util.*;
 public class OperatingSystemRunner {
 
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
-        ProcessGenerator generator = new ProcessGenerator();
         Scheduler jobScheduler = new Scheduler();
         Dispatcher jobDispatcher = new Dispatcher();
+        ProcessGenerator generator = new ProcessGenerator(jobDispatcher);
         Scanner user = new Scanner(System.in);
         System.out.print("Number of processes to generate: ");
         generator.processCount = user.nextInt();

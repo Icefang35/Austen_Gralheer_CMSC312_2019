@@ -5,9 +5,11 @@ import java.util.*;
 public class ProcessGenerator extends Thread{
     Random rand = new Random();
     Scheduler scheduler = new Scheduler();
+    Dispatcher dispatcher;
     public int processCount;
 
-    public ProcessGenerator(){
+    public ProcessGenerator(Dispatcher dispatcher){
+        this.dispatcher = dispatcher;
     }
 
     int runtime;
@@ -100,9 +102,9 @@ public class ProcessGenerator extends Thread{
 
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin, criticalSec);
-            process = new Process(type, instructions, runtime, memory, pID);
+            process = new Process(type, instructions, runtime, memory, pID, dispatcher);
             scheduler.shortJobFirst(process);
-            processes.add(new Process(type, instructions, runtime, memory, pID));
+            processes.add(new Process(type, instructions, runtime, memory, pID, dispatcher));
             pID++;
             runtime = 0;
             memory = 0;

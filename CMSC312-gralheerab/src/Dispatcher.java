@@ -20,40 +20,72 @@ public class Dispatcher extends Thread {
     }
 
     //"runs" each scheduled job by sleeping for the total runtime of each job job
-    public static void runJobs() throws InterruptedException{
-        boolean mutexLock = false;
+//    public static void runJobs() throws InterruptedException{
+//        boolean mutexLock = false;
+//
+//        for(int i = 0; i < processes.size(); i++){
+//            Process current = processes.get(i);
+//            System.out.println(current.getPID() + " - " + current.getRuntime());
+//        }
+//
+//        for(int i = 0; i < processes.size(); i++){
+//            //if(processes.get(i).getState().contains("ready")) {
+//                Instruction[] instructions = processes.get(i).PCB.instructions;
+//                setState(processes.get(i).PCB, "running");
+//                System.out.println("Running job " + i);
+//                for (int j = 0; j < instructions.length; j++) {
+//                    if (instructions[j].isCritical) {
+//                        mutexLock = true;
+//                        Thread.sleep(instructions[j].time);
+//                        mutexLock = false;
+//                    } else {
+//                        Thread.sleep(instructions[j].time);
+//                    }
+//                }
+//                setState(processes.get(i).PCB, "terminated");
+//                System.out.print(processes.get(i).toString());
+//                //processes.remove(i);
+//            //}
+//        }
+//
+//        //if(processes.size() == 0){
+//
+//        //}
+//        //else {
+//            System.out.println("'runJobs' finished");
+//        //}
+//    }
 
+    public static void runJobs() throws InterruptedException{
         for(int i = 0; i < processes.size(); i++){
             Process current = processes.get(i);
             System.out.println(current.getPID() + " - " + current.getRuntime());
         }
 
         for(int i = 0; i < processes.size(); i++){
-            //if(processes.get(i).getState().contains("ready")) {
-                Instruction[] instructions = processes.get(i).PCB.instructions;
-                setState(processes.get(i).PCB, "running");
-                System.out.println("Running job " + i);
-                for (int j = 0; j < instructions.length; j++) {
-                    if (instructions[j].isCritical) {
-                        mutexLock = true;
-                        Thread.sleep(instructions[j].time);
-                        mutexLock = false;
-                    } else {
-                        Thread.sleep(instructions[j].time);
-                    }
-                }
-                setState(processes.get(i).PCB, "terminated");
-                System.out.print(processes.get(i).toString());
-                //processes.remove(i);
-            //}
+            processes.get(i).start();
         }
+    }
 
-        //if(processes.size() == 0){
+    public static void runJob(ProcessControlBlock job) throws InterruptedException{
+        boolean mutexLock;
 
-        //}
-        //else {
-            System.out.println("'runJobs' finished");
-        //}
+        //System.out.println(job.pId + " - " + job.runtime);
+
+        Instruction[] instructions = job.instructions;
+        setState(job, "running");
+        //System.out.println("Running job " + i);
+        for (int j = 0; j < instructions.length; j++) {
+            if (instructions[j].isCritical) {
+                mutexLock = true;
+                Thread.sleep(instructions[j].time);
+                mutexLock = false;
+            } else {
+                Thread.sleep(instructions[j].time);
+            }
+        }
+        setState(job, "terminated");
+        System.out.print(job.toString());
     }
 
     public static ArrayList<Process> checkMemory(ArrayList<Process> processes, PhysicalMemory physical){
