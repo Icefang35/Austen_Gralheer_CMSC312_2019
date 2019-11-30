@@ -74,13 +74,14 @@ public class Dispatcher extends Thread {
 
         Instruction[] instructions = job.instructions;
         setState(job, "running");
-        //System.out.println("Running job " + i);
         for (int j = 0; j < instructions.length; j++) {
             if (instructions[j].isCritical) {
                 mutexLock = true;
+                System.out.println(job.pId + instructions[j].toString());
                 Thread.sleep(instructions[j].time);
                 mutexLock = false;
             } else {
+                System.out.println(job.pId + instructions[j].toString());
                 Thread.sleep(instructions[j].time);
             }
         }
