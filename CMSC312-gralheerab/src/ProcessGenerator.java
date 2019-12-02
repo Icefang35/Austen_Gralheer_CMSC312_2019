@@ -144,11 +144,13 @@ public class ProcessGenerator extends Thread{
                 instructionType = "Calculate";
                 instructionTime = rand.nextInt(randCalc) + calcMin;
                 runtime += instructionTime;
+                memory += 20;
             }
             else if(percentInstruction > calculate && percentInstruction <= (calculate + IO)){
                 instructionType = "I/O";
                 instructionTime = rand.nextInt(randIO) + IOMin;
                 memory += instructionTime;
+                runtime += 50;
             }
 
             if(i == criticalIndex){

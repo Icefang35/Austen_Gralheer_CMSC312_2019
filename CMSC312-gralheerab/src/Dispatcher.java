@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class Dispatcher extends Thread {
 
     public static ArrayList<Process> processes = new ArrayList<Process>();
+    public static PhysicalMemory physical;
 
     public void run(){
         try{
@@ -62,13 +63,18 @@ public class Dispatcher extends Thread {
             System.out.println(current.getPID() + " - " + current.getRuntime());
         }
 
+        //checkMemory()
+        System.out.println();
+
         for(int i = 0; i < processes.size(); i++){
-            processes.get(i).start();
+            //if(processes.get(i).getProcessState().contains("Ready")) {
+                processes.get(i).start();
+            //}
         }
     }
 
     public static void runJob(ProcessControlBlock job) throws InterruptedException{
-        boolean mutexLock;
+        boolean mutexLock = false;
 
         //System.out.println(job.pId + " - " + job.runtime);
 
@@ -76,12 +82,14 @@ public class Dispatcher extends Thread {
         setState(job, "running");
         for (int j = 0; j < instructions.length; j++) {
             if (instructions[j].isCritical) {
-                mutexLock = true;
-                System.out.println(job.pId + instructions[j].toString());
-                Thread.sleep(instructions[j].time);
-                mutexLock = false;
+                if(!mutexLock) {
+                    mutexLock = true;
+                    System.out.println(job.pId + " " + instructions[j].toString());
+                    Thread.sleep(instructions[j].time);
+                    mutexLock = false;
+                }
             } else {
-                System.out.println(job.pId + instructions[j].toString());
+                System.out.println(job.pId + " " + instructions[j].toString());
                 Thread.sleep(instructions[j].time);
             }
         }
@@ -89,12 +97,12 @@ public class Dispatcher extends Thread {
         System.out.print(job.toString());
     }
 
-    public static ArrayList<Process> checkMemory(ArrayList<Process> processes, PhysicalMemory physical){
+    public ArrayList<Process> checkMemory(){
         ProcessControlBlock PCB;
         for (int i = 0; i < processes.size(); i++){
             PCB = processes.get(i).PCB;
             if (PCB.memory > physical.CheckMemory()){
-                physical.AllocateFrames(PCB.memory, PCB.pId);
+                //physical.AllocateFrames(PCB.memory, PCB.pId);
                 setState(processes.get(i).PCB, "ready");
             }
         }

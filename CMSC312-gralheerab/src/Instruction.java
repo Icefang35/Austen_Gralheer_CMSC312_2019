@@ -21,7 +21,7 @@ public class Instruction {
         }
 
         if(isCritical){
-            instruction += "Critical Section";
+            instruction += "Critical Section" + "\n";
         }
 
         return instruction;
