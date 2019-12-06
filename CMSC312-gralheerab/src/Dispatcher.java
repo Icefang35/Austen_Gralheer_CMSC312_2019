@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Queue;
 
 //class for the process dispatcher that runs and changes the state of each process
 public class Dispatcher {
@@ -78,19 +79,21 @@ public class Dispatcher {
 
         //System.out.println(job.pId + " - " + job.runtime);
 
-        Instruction[] instructions = job.instructions;
+        Queue<Instruction> instructions = job.instructions;
         setState(job, "running");
-        for (int j = 0; j < instructions.length; j++) {
-            if (instructions[j].isCritical) {
+        while(instructions.isEmpty() == false) {
+            if (instructions.peek().isCritical) {
                 if(!mutexLock) {
                     mutexLock = true;
-                    System.out.println(job.pId + " " + instructions[j].toString());
-                    Thread.sleep(instructions[j].time);
+                    System.out.println(job.pId + " " + instructions.peek().toString());
+                    Thread.sleep(instructions.peek().time);
                     mutexLock = false;
+                    instructions.remove();
                 }
             } else {
-                System.out.println(job.pId + " " + instructions[j].toString());
-                Thread.sleep(instructions[j].time);
+                System.out.println(job.pId + " " + instructions.peek().toString());
+                Thread.sleep(instructions.peek().time);
+                instructions.remove();
             }
         }
         setState(job, "terminated");

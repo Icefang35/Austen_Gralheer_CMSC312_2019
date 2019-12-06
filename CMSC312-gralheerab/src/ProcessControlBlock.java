@@ -7,6 +7,9 @@ public class ProcessControlBlock {
     int runtime;
     int memory;
     int pId;
+    int instructCount;
+    int numCalculate = 0;
+    int numIO = 0;
     int programCounter;
     int priority;
     Queue<Instruction> instructions;
@@ -20,14 +23,12 @@ public class ProcessControlBlock {
         pId = pID;
         //programCounter = pCounter;
         //this.priority = priority;
+
+        countInstructs();
     }
 
-    public String toString(){
-        int numCalculate = 0;
-        int numIO = 0;
-
-        //TODO: add program counter, and priority
-        String process =jobType + " " + pId + "\n" + processState + "\n";
+    private void countInstructs(){
+        instructCount = instructions.size();
 
         for(int i = 0; i < instructions.size(); i++){
             String instructType = instructions.peek().type;
@@ -38,9 +39,17 @@ public class ProcessControlBlock {
                 numIO++;
             }
         }
+    }
+
+    public String toString(){
+
+
+        //TODO: add program counter, and priority
+        String process =jobType + " " + pId + "\n" + processState + "\n";
+
         process += "Runtime: " + runtime + "\n";
         process += "Memory: " + memory + "\n";
-        process += "Instructions: " + instructions.size() + "\n";
+        process += "Instructions: " + instructCount + "\n";
         process += "CALCULATE: " + numCalculate + "\n";
         process += "I/0: " + numIO + "\n" + "\n";
 
