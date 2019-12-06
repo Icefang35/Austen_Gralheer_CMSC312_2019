@@ -4,7 +4,7 @@ import java.util.ArrayList;
 //class for the process scheduler that sorts the process based on scheduling algorithms
 public class Scheduler {
 
-    public Dispatcher dispatch = new Dispatcher();
+    public Dispatcher dispatch = Dispatcher.getInstance();
     public static ArrayList<Process> scheduled = new ArrayList<Process>();
 
     public Scheduler(){

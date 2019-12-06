@@ -1,18 +1,18 @@
 import java.util.ArrayList;
 
 //class for the process dispatcher that runs and changes the state of each process
-public class Dispatcher extends Thread {
+public class Dispatcher {
 
+    private static Dispatcher single_instance = null;
     public static ArrayList<Process> processes = new ArrayList<Process>();
     public static PhysicalMemory physical;
 
-    public void run(){
-        try{
-            runJobs();
+    public static Dispatcher getInstance(){
+        if (single_instance == null){
+            single_instance = new Dispatcher();
         }
-        catch(Exception e){
 
-        }
+        return single_instance;
     }
 
     //changes the state of individual jobs

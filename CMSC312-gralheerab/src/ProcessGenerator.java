@@ -8,8 +8,8 @@ public class ProcessGenerator extends Thread{
     Dispatcher dispatcher;
     public int processCount;
 
-    public ProcessGenerator(Dispatcher dispatcher){
-        this.dispatcher = dispatcher;
+    public ProcessGenerator(){
+        this.dispatcher = Dispatcher.getInstance();
     }
 
     int runtime;
@@ -42,8 +42,8 @@ public class ProcessGenerator extends Thread{
         int IOMax = 0;
         int IOMin = 0;
         int pID = 1;
-        Instruction[] instructions;
-        Dispatcher jobDispatcher = new Dispatcher();
+        Queue<Instruction> instructions;
+        Dispatcher jobDispatcher = Dispatcher.getInstance();
 
         //randomly selects the job type, amount of instructions, and type of instructions for each process, as well as finding the correct template file
         for(int i = 0; i < processCount; i++){
@@ -102,9 +102,9 @@ public class ProcessGenerator extends Thread{
 
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin, criticalSec);
-            process = new Process(type, instructions, runtime, memory, pID, dispatcher);
+            process = new Process(type, instructions, runtime, memory, pID);
             scheduler.shortJobFirst(process);
-            processes.add(new Process(type, instructions, runtime, memory, pID, dispatcher));
+            processes.add(process);
             pID++;
             runtime = 0;
             memory = 0;
@@ -116,7 +116,7 @@ public class ProcessGenerator extends Thread{
     }
 
     //randomly sets the instruction type and runtime for each individual instruction
-    public Instruction[] createInstructions(int calculate, int IO, int calcMax, int calcMin, int IOMax, int IOMin, String criticalSec) {
+    public Queue<Instruction> createInstructions(int calculate, int IO, int calcMax, int calcMin, int IOMax, int IOMin, String criticalSec) {
         int instructionCount = rand.nextInt(9) + 1;
         int percentInstruction;
         String instructionType = "";
@@ -125,7 +125,107 @@ public class ProcessGenerator extends Thread{
         int instructionTime = 0;
         int criticalIndex = 0;
         boolean isCritical = false;
-        Instruction[] instructions = new Instruction[instructionCount];
+        Queue<Instruction> instructions = new Queue<Instruction>() {
+            @Override
+            public int size() {
+                return 0;
+            }
+
+            @Override
+            public boolean isEmpty() {
+                return false;
+            }
+
+            @Override
+            public boolean contains(Object o) {
+                return false;
+            }
+
+            @Override
+            public Iterator<Instruction> iterator() {
+                return null;
+            }
+
+            @Override
+            public Object[] toArray() {
+                return new Object[0];
+            }
+
+            @Override
+            public <T> T[] toArray(T[] ts) {
+                return null;
+            }
+
+            @Override
+            public boolean add(Instruction instruction) {
+                return false;
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                return false;
+            }
+
+            @Override
+            public boolean containsAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean addAll(Collection<? extends Instruction> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean removeAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public boolean retainAll(Collection<?> collection) {
+                return false;
+            }
+
+            @Override
+            public void clear() {
+
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                return false;
+            }
+
+            @Override
+            public int hashCode() {
+                return 0;
+            }
+
+            @Override
+            public boolean offer(Instruction instruction) {
+                return false;
+            }
+
+            @Override
+            public Instruction remove() {
+                return null;
+            }
+
+            @Override
+            public Instruction poll() {
+                return null;
+            }
+
+            @Override
+            public Instruction element() {
+                return null;
+            }
+
+            @Override
+            public Instruction peek() {
+                return null;
+            }
+        };
 
         if(criticalSec.contains("Early")){
             criticalIndex = instructionCount/4;
@@ -160,7 +260,7 @@ public class ProcessGenerator extends Thread{
                 isCritical = false;
             }
 
-            instructions[i] = new Instruction(instructionType, instructionTime, isCritical);
+            instructions.add(new Instruction(instructionType, instructionTime, isCritical));
         }
 
         return instructions;

@@ -1,11 +1,13 @@
+import java.util.Queue;
+
 //Class for each individual process, containing a ProcessControlBlock as well as some accessor methods for variables of the ProcessControlBlock
 public class Process extends Thread {
     ProcessControlBlock PCB;
     Dispatcher dispatcher;
 
-    public Process(String jType, Instruction[] instructs, int runtime, int memory, int pID, Dispatcher dispatcher){
+    public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID){
         PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID);
-        this.dispatcher = dispatcher;
+        this.dispatcher = Dispatcher.getInstance();
     }
 
     public void run(){

@@ -1,3 +1,5 @@
+import java.util.Queue;
+
 //Class for individual ProcessControlBlocks containing all of the information for individual processes
 public class ProcessControlBlock {
     String processState;
@@ -7,9 +9,9 @@ public class ProcessControlBlock {
     int pId;
     int programCounter;
     int priority;
-    Instruction[] instructions;
+    Queue<Instruction> instructions;
 
-    public ProcessControlBlock(String pState, String jType, Instruction[] instructs, int time, int mem, int pID){
+    public ProcessControlBlock(String pState, String jType, Queue<Instruction> instructs, int time, int mem, int pID){
         processState = pState;
         jobType = jType;
         instructions = instructs;
@@ -27,8 +29,8 @@ public class ProcessControlBlock {
         //TODO: add program counter, and priority
         String process =jobType + " " + pId + "\n" + processState + "\n";
 
-        for(int i = 0; i < instructions.length; i++){
-            String instructType = instructions[i].type;
+        for(int i = 0; i < instructions.size(); i++){
+            String instructType = instructions.peek().type;
             if(instructType.equals("Calculate")){
                 numCalculate++;
             }
@@ -38,7 +40,7 @@ public class ProcessControlBlock {
         }
         process += "Runtime: " + runtime + "\n";
         process += "Memory: " + memory + "\n";
-        process += "Instructions: " + instructions.length + "\n";
+        process += "Instructions: " + instructions.size() + "\n";
         process += "CALCULATE: " + numCalculate + "\n";
         process += "I/0: " + numIO + "\n" + "\n";
 

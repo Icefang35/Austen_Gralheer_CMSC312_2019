@@ -7,8 +7,7 @@ public class OperatingSystemRunner {
         PhysicalMemory physical;
         VirtualMemory virtual;
         Scheduler jobScheduler = new Scheduler();
-        Dispatcher jobDispatcher = new Dispatcher();
-        ProcessGenerator generator = new ProcessGenerator(jobDispatcher);
+        ProcessGenerator generator = new ProcessGenerator();
         Scanner user = new Scanner(System.in);
         System.out.print("Number of processes to generate: ");
         generator.processCount = user.nextInt();
