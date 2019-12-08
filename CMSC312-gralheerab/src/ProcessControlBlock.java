@@ -12,15 +12,17 @@ public class ProcessControlBlock {
     int numIO = 0;
     int programCounter;
     int priority;
+    boolean isChild;
     Queue<Instruction> instructions;
 
-    public ProcessControlBlock(String pState, String jType, Queue<Instruction> instructs, int time, int mem, int pID){
+    public ProcessControlBlock(String pState, String jType, Queue<Instruction> instructs, int time, int mem, int pID, boolean child){
         processState = pState;
         jobType = jType;
         instructions = instructs;
         runtime = time;
         memory = mem;
         pId = pID;
+        isChild = child;
         //programCounter = pCounter;
         //this.priority = priority;
 
@@ -51,7 +53,13 @@ public class ProcessControlBlock {
         process += "Memory: " + memory + "\n";
         process += "Instructions: " + instructCount + "\n";
         process += "CALCULATE: " + numCalculate + "\n";
-        process += "I/0: " + numIO + "\n" + "\n";
+        process += "I/0: " + numIO + "\n";
+
+        if(isChild){
+            process += "Is a Child" + "\n" + "\n";
+        } else {
+            process += "Is a Parent" + "\n" + "\n";
+        }
 
         return process;
     }

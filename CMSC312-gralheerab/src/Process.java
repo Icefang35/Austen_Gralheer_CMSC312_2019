@@ -7,7 +7,7 @@ public class Process extends Thread {
     Boolean isChild = false;
 
     public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID){
-        PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID);
+        PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID, isChild);
         this.dispatcher = Dispatcher.getInstance();
     }
 
