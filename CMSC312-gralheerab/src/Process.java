@@ -4,6 +4,7 @@ import java.util.Queue;
 public class Process extends Thread {
     ProcessControlBlock PCB;
     Dispatcher dispatcher;
+    Boolean isChild = false;
 
     public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID){
         PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID);
@@ -17,6 +18,10 @@ public class Process extends Thread {
         catch(Exception e){
 
         }
+    }
+
+    public void setChild(){
+        isChild = true;
     }
 
     public String toString(){

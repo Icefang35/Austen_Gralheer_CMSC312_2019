@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Queue;
+import java.util.Random;
 
 //class for the process dispatcher that runs and changes the state of each process
 public class Dispatcher {
@@ -7,6 +8,7 @@ public class Dispatcher {
     private static Dispatcher single_instance = null;
     public static ArrayList<Process> processes = new ArrayList<Process>();
     public static PhysicalMemory physical;
+    public static Random rand = new Random();
 
     public static Dispatcher getInstance(){
         if (single_instance == null){
@@ -59,6 +61,7 @@ public class Dispatcher {
 //    }
 
     public static void runJobs() throws InterruptedException{
+
         for(int i = 0; i < processes.size(); i++){
             Process current = processes.get(i);
             System.out.println(current.getPID() + " - " + current.getRuntime());
@@ -76,24 +79,60 @@ public class Dispatcher {
 
     public static void runJob(ProcessControlBlock job) throws InterruptedException{
         boolean mutexLock = false;
-
-        //System.out.println(job.pId + " - " + job.runtime);
+        boolean hasChild = false;
 
         Queue<Instruction> instructions = job.instructions;
         setState(job, "running");
-        while(instructions.isEmpty() == false) {
-            if (instructions.peek().isCritical) {
-                if(!mutexLock) {
-                    mutexLock = true;
+
+        if(rand.nextInt(100) < 25){
+            hasChild = true;
+        }
+
+        if(hasChild){
+            int childIndex = rand.nextInt(instructions.size());
+            Queue<Instruction> forChild = instructions;
+            int currentIndex = 0;
+
+            while (instructions.isEmpty() == false) {
+                if(currentIndex == childIndex){
+                    Process childProcess = new Process(job.jobType, forChild, job.runtime, job.memory, job.pId);
+                    childProcess.setChild();
+                    childProcess.start();
+                    childProcess.join();
+                }
+
+                if (instructions.peek().isCritical) {
+                    if (!mutexLock) {
+                        mutexLock = true;
+                        System.out.println(job.pId + " " + instructions.peek().toString());
+                        Thread.sleep(instructions.peek().time);
+                        mutexLock = false;
+                        instructions.remove();
+                    }
+                } else {
                     System.out.println(job.pId + " " + instructions.peek().toString());
                     Thread.sleep(instructions.peek().time);
-                    mutexLock = false;
                     instructions.remove();
                 }
-            } else {
-                System.out.println(job.pId + " " + instructions.peek().toString());
-                Thread.sleep(instructions.peek().time);
-                instructions.remove();
+                currentIndex++;
+            }
+
+        }
+        else {
+            while (instructions.isEmpty() == false) {
+                if (instructions.peek().isCritical) {
+                    if (!mutexLock) {
+                        mutexLock = true;
+                        System.out.println(job.pId + " " + instructions.peek().toString());
+                        Thread.sleep(instructions.peek().time);
+                        mutexLock = false;
+                        instructions.remove();
+                    }
+                } else {
+                    System.out.println(job.pId + " " + instructions.peek().toString());
+                    Thread.sleep(instructions.peek().time);
+                    instructions.remove();
+                }
             }
         }
         setState(job, "terminated");
