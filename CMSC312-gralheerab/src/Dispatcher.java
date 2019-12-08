@@ -1,7 +1,12 @@
+import java.io.IOException;
+import java.io.PipedReader;
+import java.nio.ByteBuffer;
+import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
+
 
 //class for the process dispatcher that runs and changes the state of each process
 public class Dispatcher {
@@ -10,6 +15,7 @@ public class Dispatcher {
     public static ArrayList<Process> processes = new ArrayList<Process>();
     public static PhysicalMemory physical;
     public static Random rand = new Random();
+
 
     public static Dispatcher getInstance(){
         if (single_instance == null){
@@ -23,43 +29,6 @@ public class Dispatcher {
     public static void setState (ProcessControlBlock PCB, String newState){
         PCB.processState = newState;
     }
-
-    //"runs" each scheduled job by sleeping for the total runtime of each job job
-//    public static void runJobs() throws InterruptedException{
-//        boolean mutexLock = false;
-//
-//        for(int i = 0; i < processes.size(); i++){
-//            Process current = processes.get(i);
-//            System.out.println(current.getPID() + " - " + current.getRuntime());
-//        }
-//
-//        for(int i = 0; i < processes.size(); i++){
-//            //if(processes.get(i).getState().contains("ready")) {
-//                Instruction[] instructions = processes.get(i).PCB.instructions;
-//                setState(processes.get(i).PCB, "running");
-//                System.out.println("Running job " + i);
-//                for (int j = 0; j < instructions.length; j++) {
-//                    if (instructions[j].isCritical) {
-//                        mutexLock = true;
-//                        Thread.sleep(instructions[j].time);
-//                        mutexLock = false;
-//                    } else {
-//                        Thread.sleep(instructions[j].time);
-//                    }
-//                }
-//                setState(processes.get(i).PCB, "terminated");
-//                System.out.print(processes.get(i).toString());
-//                //processes.remove(i);
-//            //}
-//        }
-//
-//        //if(processes.size() == 0){
-//
-//        //}
-//        //else {
-//            System.out.println("'runJobs' finished");
-//        //}
-//    }
 
     public static void runJobs() throws InterruptedException{
 
@@ -78,7 +47,7 @@ public class Dispatcher {
         }
     }
 
-    public static void runJob(ProcessControlBlock job) throws InterruptedException{
+    public static void runJob(ProcessControlBlock job) throws InterruptedException, IOException {
         boolean mutexLock = false;
         boolean hasChild = false;
 
@@ -97,6 +66,7 @@ public class Dispatcher {
             while (instructions.isEmpty() == false) {
                 if(currentIndex == childIndex){
                     Process childProcess = new Process(job.jobType, forChild, job.runtime, job.memory, job.pId);
+
                     childProcess.setChild();
                     childProcess.start();
                     childProcess.join();
@@ -119,8 +89,7 @@ public class Dispatcher {
                 currentIndex++;
             }
 
-        }
-        else {
+        } else {
             while (instructions.isEmpty() == false) {
                 if (instructions.peek().isCritical) {
                     if (!mutexLock) {

@@ -22,6 +22,9 @@ public class Process extends Thread {
     public void setChild(){
         PCB.isChild = true;
     }
+    public void usePipe(){
+        PCB.usesPipe = true;
+    }
 
     public String toString(){
         String process = PCB.toString();

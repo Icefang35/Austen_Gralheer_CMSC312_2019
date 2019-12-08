@@ -13,6 +13,7 @@ public class ProcessControlBlock {
     int programCounter;
     int priority;
     boolean isChild = false;
+    boolean usesPipe = false;
     Queue<Instruction> instructions;
 
     public ProcessControlBlock(String pState, String jType, Queue<Instruction> instructs, int time, int mem, int pID){
