@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Random;
 
@@ -90,7 +91,7 @@ public class Dispatcher {
 
         if(hasChild){
             int childIndex = rand.nextInt(instructions.size());
-            Queue<Instruction> forChild = instructions;
+            Queue<Instruction> forChild = new LinkedList<>(job.instructions);
             int currentIndex = 0;
 
             while (instructions.isEmpty() == false) {
@@ -99,6 +100,7 @@ public class Dispatcher {
                     childProcess.setChild();
                     childProcess.start();
                     childProcess.join();
+                    System.out.println("Child terminated");
                 }
 
                 if (instructions.peek().isCritical) {

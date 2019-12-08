@@ -4,10 +4,9 @@ import java.util.Queue;
 public class Process extends Thread {
     ProcessControlBlock PCB;
     Dispatcher dispatcher;
-    Boolean isChild = false;
 
     public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID){
-        PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID, isChild);
+        PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID);
         this.dispatcher = Dispatcher.getInstance();
     }
 
@@ -16,12 +15,12 @@ public class Process extends Thread {
             dispatcher.runJob(PCB);
         }
         catch(Exception e){
-
+            System.out.println("Failed to run process " + getPID());
         }
     }
 
     public void setChild(){
-        isChild = true;
+        PCB.isChild = true;
     }
 
     public String toString(){
