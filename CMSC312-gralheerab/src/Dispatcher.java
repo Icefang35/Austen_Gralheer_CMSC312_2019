@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.io.PipedReader;
+import java.io.PipedWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.Pipe;
 import java.util.ArrayList;
@@ -50,12 +51,32 @@ public class Dispatcher {
     public static void runJob(ProcessControlBlock job) throws InterruptedException, IOException {
         boolean mutexLock = false;
         boolean hasChild = false;
+        boolean usesPipe = false;
 
         Queue<Instruction> instructions = job.instructions;
+        PipeReaderProcess childReader = null;
         setState(job, "running");
 
-        if(rand.nextInt(100) < 25){
+        int random = rand.nextInt(100);
+        if(random < 25){
             hasChild = true;
+        }
+        else if(random > 75){
+            usesPipe = true;
+        }
+
+        if (usesPipe){
+            PipedReader reader = new PipedReader();
+            PipedWriter writer = new PipedWriter();
+
+            writer.connect(reader);
+
+            childReader = new PipeReaderProcess(job.pId, reader);
+
+            childReader.start();
+            job.sendMessage(writer);
+            //Thread.sleep(2000);
+            //childReader.stopReading();
         }
 
         if(hasChild){
@@ -88,7 +109,6 @@ public class Dispatcher {
                 }
                 currentIndex++;
             }
-
         } else {
             while (instructions.isEmpty() == false) {
                 if (instructions.peek().isCritical) {
@@ -106,6 +126,11 @@ public class Dispatcher {
                 }
             }
         }
+
+        if(usesPipe){
+            childReader.stopReading();
+        }
+
         setState(job, "terminated");
         System.out.print(job.toString());
     }

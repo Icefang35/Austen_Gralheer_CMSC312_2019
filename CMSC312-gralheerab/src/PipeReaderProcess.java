@@ -4,6 +4,7 @@ import java.io.PipedReader;
 public class PipeReaderProcess extends Thread {
     PipedReader reader;
     int parentID;
+    boolean reading = true;
 
     public PipeReaderProcess(int parentID, PipedReader reader){
         this.parentID = parentID;
@@ -21,11 +22,15 @@ public class PipeReaderProcess extends Thread {
     }
 
     public void readMessage() throws IOException {
-        while(true){
+        while(reading){
             char c = (char) reader.read();
             if (c != -1) {
                 System.out.print(c);
             }
         }
+    }
+
+    public void stopReading(){
+        reading = false;
     }
 }

@@ -1,9 +1,11 @@
+import java.io.PipedWriter;
 import java.util.Queue;
 
 //Class for each individual process, containing a ProcessControlBlock as well as some accessor methods for variables of the ProcessControlBlock
 public class Process extends Thread {
     ProcessControlBlock PCB;
     Dispatcher dispatcher;
+    PipedWriter writer;
 
     public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID){
         PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID);
