@@ -14,7 +14,9 @@ public class Process extends Thread {
 
     public void run(){
         try{
-            dispatcher.runJob(PCB);
+            dispatcher.setState(PCB, "RUN");
+            dispatcher.runJob(this);
+            dispatcher.setState(PCB, "EXIT");
         }
         catch(Exception e){
             System.out.println("Failed to run process " + getPID());

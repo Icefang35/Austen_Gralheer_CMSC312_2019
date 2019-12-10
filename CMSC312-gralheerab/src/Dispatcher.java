@@ -14,8 +14,9 @@ public class Dispatcher {
 
     private static Dispatcher single_instance = null;
     public static ArrayList<Process> processes = new ArrayList<Process>();
-    public static PhysicalMemory physical;
     public static Random rand = new Random();
+    public static VirtualMemory virtual = new VirtualMemory(rand.nextInt(1000) + 1000);
+    public static PhysicalMemory physical = new PhysicalMemory(virtual.size / 10);
 
 
     public static Dispatcher getInstance(){
@@ -33,39 +34,47 @@ public class Dispatcher {
 
     public static void runJobs() throws InterruptedException{
 
-        for(int i = 0; i < processes.size(); i++){
-            Process current = processes.get(i);
-            System.out.println(current.getPID() + " - " + current.getRuntime());
-        }
-
-        //checkMemory()
         System.out.println();
 
-        for(int i = 0; i < processes.size(); i++){
-            //if(processes.get(i).getProcessState().contains("Ready")) {
-                processes.get(i).start();
-            //}
+        processes.get(rand.nextInt(processes.size())).usePipe();
+        checkMemory();
+
+        while(processes.isEmpty() == false) {
+            if(processesContainState("READY")) {
+                for (Process process : processes) {
+                    if (process.getProcessState().contains("READY")) {
+                        //System.out.println(process.getPID());
+                        process.start();
+                    }
+                }
+            }
+            Thread.sleep(500);
+
+            if(!processesContainState("EXIT") && !processesContainState("RUN") && !processesContainState("WAIT")){
+                checkMemory();
+            }
         }
     }
 
-    public static void runJob(ProcessControlBlock job) throws InterruptedException, IOException {
+    public static boolean processesContainState(final String status){
+        return processes.stream().filter(o -> o.getProcessState().equals(status)).findFirst().isPresent();
+    }
+
+    public static void runJob(Process process) throws InterruptedException, IOException {
         boolean mutexLock = false;
         boolean hasChild = false;
-        boolean usesPipe = false;
+        ProcessControlBlock job = process.PCB;
+//        boolean usesPipe = false;
 
         Queue<Instruction> instructions = job.instructions;
         PipeReaderProcess childReader = null;
-        setState(job, "running");
 
         int random = rand.nextInt(100);
         if(random < 25){
             hasChild = true;
         }
-        else if(random > 75){
-            usesPipe = true;
-        }
 
-        if (usesPipe){
+        if (job.usesPipe){
             PipedReader reader = new PipedReader();
             PipedWriter writer = new PipedWriter();
 
@@ -75,8 +84,6 @@ public class Dispatcher {
 
             childReader.start();
             job.sendMessage(writer);
-            //Thread.sleep(2000);
-            //childReader.stopReading();
         }
 
         if(hasChild){
@@ -86,24 +93,26 @@ public class Dispatcher {
 
             while (instructions.isEmpty() == false) {
                 if(currentIndex == childIndex){
+                    setState(job, "WAIT");
                     Process childProcess = new Process(job.jobType, forChild, job.runtime, job.memory, job.pId);
 
                     childProcess.setChild();
                     childProcess.start();
                     childProcess.join();
+                    setState(job, "RUN");
                     System.out.println("Child terminated");
                 }
 
                 if (instructions.peek().isCritical) {
                     if (!mutexLock) {
                         mutexLock = true;
-                        System.out.println(job.pId + " " + instructions.peek().toString());
+                        //System.out.println(job.pId + " " + instructions.peek().toString());
                         Thread.sleep(instructions.peek().time);
                         mutexLock = false;
                         instructions.remove();
                     }
                 } else {
-                    System.out.println(job.pId + " " + instructions.peek().toString());
+                    //System.out.println(job.pId + " " + instructions.peek().toString());
                     Thread.sleep(instructions.peek().time);
                     instructions.remove();
                 }
@@ -114,36 +123,38 @@ public class Dispatcher {
                 if (instructions.peek().isCritical) {
                     if (!mutexLock) {
                         mutexLock = true;
-                        System.out.println(job.pId + " " + instructions.peek().toString());
+                        //System.out.println(job.pId + " " + instructions.peek().toString());
                         Thread.sleep(instructions.peek().time);
                         mutexLock = false;
                         instructions.remove();
                     }
                 } else {
-                    System.out.println(job.pId + " " + instructions.peek().toString());
+                    //System.out.println(job.pId + " " + instructions.peek().toString());
                     Thread.sleep(instructions.peek().time);
                     instructions.remove();
                 }
             }
         }
 
-        if(usesPipe){
+        if(job.usesPipe){
             childReader.stopReading();
         }
 
-        setState(job, "terminated");
-        System.out.print(job.toString());
+        virtual.DeallocateFrames(job.pId);
+        setState(job, "EXIT");
+        System.out.print(process.toString());
+        processes.remove(process);
     }
 
-    public ArrayList<Process> checkMemory(){
+    public static void checkMemory(){
         ProcessControlBlock PCB;
         for (int i = 0; i < processes.size(); i++){
             PCB = processes.get(i).PCB;
-            if (PCB.memory > physical.CheckMemory()){
-                //physical.AllocateFrames(PCB.memory, PCB.pId);
-                setState(processes.get(i).PCB, "ready");
+            if (PCB.memory < virtual.CheckMemory()){
+                if(virtual.AllocateFrames(PCB.memory, PCB.pId)) {
+                    setState(processes.get(i).PCB, "READY");
+                }
             }
         }
-        return processes;
     }
 }

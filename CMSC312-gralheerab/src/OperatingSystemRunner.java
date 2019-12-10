@@ -12,7 +12,7 @@ public class OperatingSystemRunner {
         System.out.print("Number of processes to generate: ");
         generator.processCount = user.nextInt();
 //        int processCount = user.nextInt();
-        generator.start();
+        generator.createProcesses();
         //Process[] scheduledJobs = jobScheduler.shortJobFirst(processes);
         ArrayList<Process> scheduledJobs = jobScheduler.getSchedule();
 

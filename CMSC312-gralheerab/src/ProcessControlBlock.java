@@ -1,5 +1,6 @@
 import java.io.PipedWriter;
 import java.util.Queue;
+import java.util.Scanner;
 
 //Class for individual ProcessControlBlocks containing all of the information for individual processes
 public class ProcessControlBlock {
@@ -32,7 +33,7 @@ public class ProcessControlBlock {
 
     public void sendMessage(PipedWriter writer){
         try{
-            writer.write("This is the message sent through the pipeline! n");
+            writer.write("This message was sent through a pipeline by Process: " + pId + "! \n");
             writer.flush();
         }
         catch(Exception e){

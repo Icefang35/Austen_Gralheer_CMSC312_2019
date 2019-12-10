@@ -13,20 +13,24 @@ public class VirtualMemory {
         }
     }
 
-    public void AllocateFrames(int size, int pID){
+    public boolean AllocateFrames(int size, int pID){
         int i = 0;
         while(size > 0) {
             if( i < memory.length) {
-                memory[i].pID = pID;
-                FreeSpace--;
-                size--;
+                if(memory[i].pID == -1) {
+                    memory[i].pID = pID;
+                    FreeSpace--;
+                    size--;
+                }
                 i++;
             }
             else{
                 size = 0;
                 DeallocateFrames(pID);
+                return false;
             }
         }
+        return true;
     }
 
     public void DeallocateFrames(int pID){

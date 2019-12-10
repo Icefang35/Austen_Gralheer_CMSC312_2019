@@ -2,14 +2,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 
-public class ProcessGenerator extends Thread{
+public class ProcessGenerator{
     Random rand = new Random();
     Scheduler scheduler = new Scheduler();
-    Dispatcher dispatcher;
+    boolean running = true;
     public int processCount;
 
     public ProcessGenerator(){
-        this.dispatcher = Dispatcher.getInstance();
+        //this.dispatcher = Dispatcher.getInstance();
     }
 
     int runtime;
@@ -17,14 +17,16 @@ public class ProcessGenerator extends Thread{
 
     public void run(){
         try{
-            createProcesses();
+            while(running) {
+                createProcesses();
+            }
         }
         catch(Exception e){
-            System.out.println("Process Creation Failed");
+            System.out.println("Process creation failed");
         }
     }
 
-    public ArrayList<Process> createProcesses() throws FileNotFoundException, InterruptedException {
+    public void createProcesses() throws FileNotFoundException, InterruptedException {
         //Scanner user = new Scanner(System.in);
         //System.out.print("Number of processes to generate: ");
         //processCount = user.nextInt();
@@ -103,6 +105,7 @@ public class ProcessGenerator extends Thread{
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin, criticalSec);
             process = new Process(type, instructions, runtime, memory, pID);
+            jobDispatcher.setState(process.PCB, "NEW");
             scheduler.shortJobFirst(process);
             processes.add(process);
             pID++;
@@ -112,7 +115,7 @@ public class ProcessGenerator extends Thread{
 
         jobDispatcher.processes = scheduler.getSchedule();
         jobDispatcher.runJobs();
-        return processes;
+        running = false;
     }
 
     //randomly sets the instruction type and runtime for each individual instruction
