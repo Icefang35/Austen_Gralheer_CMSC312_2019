@@ -57,6 +57,11 @@ public class PhysicalMemory {
         }
     }
 
+    public void DeallocateFrame(int frameAddress){
+        memory[frameAddress].pID = -1;
+        FreeSpace++;
+    }
+
     public int CheckMemory(){
         return FreeSpace;
     }

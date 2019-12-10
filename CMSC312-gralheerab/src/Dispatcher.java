@@ -20,7 +20,7 @@ public class Dispatcher {
     public static boolean mutexLock = false;
     public static int currentPage = 0;
 
-    public PageFrameReplacement LRU = new PageFrameReplacement();
+    public static MemoryManagementUnit MMU = new MemoryManagementUnit();
 
     public static Dispatcher getInstance(){
         if (single_instance == null){
@@ -44,6 +44,9 @@ public class Dispatcher {
         System.out.println();
 
         processes.get(rand.nextInt(processes.size())).usePipe();
+
+        MMU.start();
+
         checkVMemory();
 
         while(processes.isEmpty() == false) {
@@ -61,6 +64,8 @@ public class Dispatcher {
                 checkVMemory();
             }
         }
+
+        MMU.running = false;
     }
 
     public static boolean processesContainState(final String status){
@@ -69,8 +74,6 @@ public class Dispatcher {
 
     public static void runJob(Process process) throws InterruptedException, IOException {
         boolean hasChild = false;
-        int childIndex = 0;
-        int currentIndex = 0;
         ProcessControlBlock job = process.PCB;
 //        boolean usesPipe = false;
 
@@ -96,12 +99,12 @@ public class Dispatcher {
         }
 
         if(hasChild){
+            int childIndex = 0;
+            int currentIndex = 0;
             if(!instructions.isEmpty()) {
                 childIndex = rand.nextInt(instructions.size());
             }
             Queue<Instruction> forChild = new LinkedList<>(job.instructions);
-
-
             while (instructions.isEmpty() == false) {
                 instruction = instructions.peek();
                 if(currentIndex == childIndex){
@@ -112,7 +115,7 @@ public class Dispatcher {
                     childProcess.start();
                     childProcess.join();
                     setState(job, "RUN");
-                    //System.out.println("Child terminated");
+                    System.out.println("Child terminated\n");
                 }
 
                 if (instruction.isCritical) {
@@ -125,17 +128,17 @@ public class Dispatcher {
                             mutexLock = false;
                             //System.out.println("Mutex un-locked");
                             instructions.remove();
-                            physical.DeallocateFrames(job);
+                            //physical.DeallocateFrames(job);
+                            currentIndex++;
                         }
-                    } else {
-                        //System.out.println("Blocked by mutex lock");
                     }
                 } else {
                     if(checkPMemory(instruction, job)) {
                         System.out.println(job.pId + " " + instruction.toString());
                         Thread.sleep(instruction.time);
                         instructions.remove();
-                        physical.DeallocateFrames(job);
+                        //physical.DeallocateFrames(job);
+                        currentIndex++;
                     }
                 }
             }
@@ -152,7 +155,7 @@ public class Dispatcher {
                             mutexLock = false;
                             //System.out.println("Mutex un-locked");
                             instructions.remove();
-                            physical.DeallocateFrames(job);
+                            //physical.DeallocateFrames(job);
                         }
                     } else {
                         //System.out.println("Blocked by mutex lock");
@@ -162,7 +165,7 @@ public class Dispatcher {
                         System.out.println(job.pId + " " + instruction.toString());
                         Thread.sleep(instruction.time);
                         instructions.remove();
-                        physical.DeallocateFrames(job);
+                        //physical.DeallocateFrames(job);
                     }
                 }
             }
@@ -172,7 +175,7 @@ public class Dispatcher {
             childReader.stopReading();
         }
 
-        virtual.DeallocateFrames(job.pId);
+        //virtual.DeallocateFrames(job.pId);
         setState(job, "EXIT");
         System.out.print(process.toString());
         processes.remove(process);
