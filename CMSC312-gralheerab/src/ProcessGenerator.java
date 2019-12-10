@@ -126,6 +126,7 @@ public class ProcessGenerator{
         int randCalc = calcMax - calcMin;
         int randIO = IOMax - IOMin;
         int instructionTime = 0;
+        int instructionMemory = 0;
         int criticalIndex = 0;
         boolean isCritical = false;
         Queue<Instruction> instructions = new LinkedList<>();
@@ -146,14 +147,16 @@ public class ProcessGenerator{
             if(percentInstruction <= calculate){
                 instructionType = "Calculate";
                 instructionTime = rand.nextInt(randCalc) + calcMin;
+                instructionMemory = 20;
                 runtime += instructionTime;
-                memory += 20;
+                memory += instructionMemory;
             }
             else if(percentInstruction > calculate && percentInstruction <= (calculate + IO)){
                 instructionType = "I/O";
-                instructionTime = rand.nextInt(randIO) + IOMin;
-                memory += instructionTime;
-                runtime += 50;
+                instructionMemory = rand.nextInt(randIO) + IOMin;
+                instructionTime = 50;
+                memory += instructionMemory;
+                runtime += instructionTime;
             }
 
             if(i == criticalIndex){
@@ -163,7 +166,7 @@ public class ProcessGenerator{
                 isCritical = false;
             }
 
-            instructions.add(new Instruction(instructionType, instructionTime, isCritical));
+            instructions.add(new Instruction(instructionType, instructionTime, instructionMemory, isCritical));
         }
 
         return instructions;

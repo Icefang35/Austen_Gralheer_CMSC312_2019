@@ -2,6 +2,7 @@ public class PhysicalMemory {
     int size;
     int FreeSpace;
     Frame[] memory;
+    Dispatcher dispatcher = Dispatcher.getInstance();
 
     public PhysicalMemory(int size){
         this.size = size;
@@ -13,31 +14,45 @@ public class PhysicalMemory {
         }
     }
 
-    public boolean AllocateFrames(int size, int pID){
+    public boolean AllocateFrames(int size, ProcessControlBlock job){
         int i = 0;
+        int j = 0;
+        Page[] newPages = new Page[size];
         while(size > 0) {
             if( i < memory.length) {
                 if(memory[i].pID == -1) {
-                    memory[i].pID = pID;
+                    memory[i].pID = job.pId;
                     FreeSpace--;
                     size--;
+                    newPages[j] = new Page(dispatcher.currentPage, i, 'P');
+                    dispatcher.currentPage++;
+                    j++;
                 }
-                    i++;
+                i++;
             }
             else{
                 size = 0;
-                DeallocateFrames(pID);
+                DeallocateFrames(job);
                 return false;
             }
+        }
+        for(Page page : newPages){
+            job.pages.setPage(page);
         }
         return true;
     }
 
-    public void DeallocateFrames(int pID){
+    public void DeallocateFrames(ProcessControlBlock job){
+        int j = 0;
         for(int i = 0; i < memory.length; i++) {
-            if (memory[i].pID == pID) {
+            if (memory[i].pID == job.pId) {
                 memory[i].pID = -1;
                 FreeSpace++;
+                for(int k = j; k < job.pages.length(); k++){
+                    if(job.pages.pages[k].frameAddress == i){
+                        job.pages.pages[k].frameAddress = -1;
+                    }
+                }
             }
         }
     }

@@ -16,8 +16,11 @@ public class Dispatcher {
     public static ArrayList<Process> processes = new ArrayList<Process>();
     public static Random rand = new Random();
     public static VirtualMemory virtual = new VirtualMemory(rand.nextInt(1000) + 1000);
-    public static PhysicalMemory physical = new PhysicalMemory(virtual.size / 10);
+    public static PhysicalMemory physical = new PhysicalMemory(virtual.size / 5);
+    public static boolean mutexLock = false;
+    public static int currentPage = 0;
 
+    public PageFrameReplacement LRU = new PageFrameReplacement();
 
     public static Dispatcher getInstance(){
         if (single_instance == null){
@@ -34,24 +37,28 @@ public class Dispatcher {
 
     public static void runJobs() throws InterruptedException{
 
+        for(int i = 0; i < processes.size(); i++){
+            System.out.println(processes.get(i).getPID() + " T=" + processes.get(i).getRuntime() + " M=" + processes.get(i).getMemory());
+        }
+
         System.out.println();
 
         processes.get(rand.nextInt(processes.size())).usePipe();
-        checkMemory();
+        checkVMemory();
 
         while(processes.isEmpty() == false) {
             if(processesContainState("READY")) {
                 for (Process process : processes) {
                     if (process.getProcessState().contains("READY")) {
-                        //System.out.println(process.getPID());
+                        System.out.println(process.getPID());
                         process.start();
                     }
                 }
             }
-            Thread.sleep(500);
+            Thread.sleep(1000);
 
             if(!processesContainState("EXIT") && !processesContainState("RUN") && !processesContainState("WAIT")){
-                checkMemory();
+                checkVMemory();
             }
         }
     }
@@ -61,12 +68,14 @@ public class Dispatcher {
     }
 
     public static void runJob(Process process) throws InterruptedException, IOException {
-        boolean mutexLock = false;
         boolean hasChild = false;
+        int childIndex = 0;
+        int currentIndex = 0;
         ProcessControlBlock job = process.PCB;
 //        boolean usesPipe = false;
 
         Queue<Instruction> instructions = job.instructions;
+        Instruction instruction;
         PipeReaderProcess childReader = null;
 
         int random = rand.nextInt(100);
@@ -87,51 +96,74 @@ public class Dispatcher {
         }
 
         if(hasChild){
-            int childIndex = rand.nextInt(instructions.size());
+            if(!instructions.isEmpty()) {
+                childIndex = rand.nextInt(instructions.size());
+            }
             Queue<Instruction> forChild = new LinkedList<>(job.instructions);
-            int currentIndex = 0;
+
 
             while (instructions.isEmpty() == false) {
+                instruction = instructions.peek();
                 if(currentIndex == childIndex){
                     setState(job, "WAIT");
                     Process childProcess = new Process(job.jobType, forChild, job.runtime, job.memory, job.pId);
-
+                    physical.DeallocateFrames(job);
                     childProcess.setChild();
                     childProcess.start();
                     childProcess.join();
                     setState(job, "RUN");
-                    System.out.println("Child terminated");
+                    //System.out.println("Child terminated");
                 }
 
-                if (instructions.peek().isCritical) {
+                if (instruction.isCritical) {
                     if (!mutexLock) {
-                        mutexLock = true;
-                        //System.out.println(job.pId + " " + instructions.peek().toString());
-                        Thread.sleep(instructions.peek().time);
-                        mutexLock = false;
-                        instructions.remove();
+                        if(checkPMemory(instruction, job)) {
+                            mutexLock = true;
+                            //System.out.println("Mutex locked");
+                            System.out.println(job.pId + " " + instruction.toString());
+                            Thread.sleep(instruction.time);
+                            mutexLock = false;
+                            //System.out.println("Mutex un-locked");
+                            instructions.remove();
+                            physical.DeallocateFrames(job);
+                        }
+                    } else {
+                        //System.out.println("Blocked by mutex lock");
                     }
                 } else {
-                    //System.out.println(job.pId + " " + instructions.peek().toString());
-                    Thread.sleep(instructions.peek().time);
-                    instructions.remove();
+                    if(checkPMemory(instruction, job)) {
+                        System.out.println(job.pId + " " + instruction.toString());
+                        Thread.sleep(instruction.time);
+                        instructions.remove();
+                        physical.DeallocateFrames(job);
+                    }
                 }
-                currentIndex++;
             }
         } else {
             while (instructions.isEmpty() == false) {
-                if (instructions.peek().isCritical) {
+                instruction = instructions.peek();
+                if (instruction.isCritical) {
                     if (!mutexLock) {
-                        mutexLock = true;
-                        //System.out.println(job.pId + " " + instructions.peek().toString());
-                        Thread.sleep(instructions.peek().time);
-                        mutexLock = false;
-                        instructions.remove();
+                        if(checkPMemory(instruction, job)) {
+                            mutexLock = true;
+                            //System.out.println("Mutex locked");
+                            System.out.println(job.pId + " " + instruction.toString());
+                            Thread.sleep(instruction.time);
+                            mutexLock = false;
+                            //System.out.println("Mutex un-locked");
+                            instructions.remove();
+                            physical.DeallocateFrames(job);
+                        }
+                    } else {
+                        //System.out.println("Blocked by mutex lock");
                     }
                 } else {
-                    //System.out.println(job.pId + " " + instructions.peek().toString());
-                    Thread.sleep(instructions.peek().time);
-                    instructions.remove();
+                    if(checkPMemory(instruction, job)) {
+                        System.out.println(job.pId + " " + instruction.toString());
+                        Thread.sleep(instruction.time);
+                        instructions.remove();
+                        physical.DeallocateFrames(job);
+                    }
                 }
             }
         }
@@ -146,7 +178,7 @@ public class Dispatcher {
         processes.remove(process);
     }
 
-    public static void checkMemory(){
+    public static void checkVMemory(){
         ProcessControlBlock PCB;
         for (int i = 0; i < processes.size(); i++){
             PCB = processes.get(i).PCB;
@@ -156,5 +188,13 @@ public class Dispatcher {
                 }
             }
         }
+    }
+
+    public static boolean checkPMemory(Instruction instruction, ProcessControlBlock job){
+        if (instruction.memory < physical.CheckMemory()){
+            physical.AllocateFrames(instruction.memory, job);
+            return true;
+        }
+        return false;
     }
 }

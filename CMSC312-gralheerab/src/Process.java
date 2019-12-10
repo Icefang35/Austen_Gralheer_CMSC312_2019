@@ -12,11 +12,12 @@ public class Process extends Thread {
         this.dispatcher = Dispatcher.getInstance();
     }
 
+    @Override
     public void run(){
         try{
             dispatcher.setState(PCB, "RUN");
             dispatcher.runJob(this);
-            dispatcher.setState(PCB, "EXIT");
+            //dispatcher.setState(PCB, "EXIT");
         }
         catch(Exception e){
             System.out.println("Failed to run process " + getPID());

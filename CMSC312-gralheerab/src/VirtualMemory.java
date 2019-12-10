@@ -42,6 +42,15 @@ public class VirtualMemory {
         }
     }
 
+    public void DeallocateFrame(int frameAddress){
+        for(int i = 0; i < memory.length; i++) {
+            if (memory[i].address == frameAddress) {
+                memory[i].pID = -1;
+                FreeSpace++;
+            }
+        }
+    }
+
     public int CheckMemory(){
         return FreeSpace;
     }

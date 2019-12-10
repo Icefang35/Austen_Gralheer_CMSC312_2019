@@ -17,6 +17,7 @@ public class ProcessControlBlock {
     boolean isChild = false;
     boolean usesPipe = false;
     Queue<Instruction> instructions;
+    PageTable pages;
 
     public ProcessControlBlock(String pState, String jType, Queue<Instruction> instructs, int time, int mem, int pID){
         processState = pState;
@@ -28,7 +29,9 @@ public class ProcessControlBlock {
         //programCounter = pCounter;
         //this.priority = priority;
 
-        countInstructs();
+        instructCount = instructions.size();
+        pages = new PageTable(memory);
+        //countInstructs();
     }
 
     public void sendMessage(PipedWriter writer){
@@ -46,10 +49,10 @@ public class ProcessControlBlock {
 
         for(int i = 0; i < instructions.size(); i++){
             String instructType = instructions.peek().type;
-            if(instructType.equals("Calculate")){
+            if(instructType.contains("Calculate")){
                 numCalculate++;
             }
-            else if(instructType.equals("I/O")){
+            else if(instructType.contains("I/O")){
                 numIO++;
             }
         }
@@ -64,8 +67,8 @@ public class ProcessControlBlock {
         process += "Runtime: " + runtime + "\n";
         process += "Memory: " + memory + "\n";
         process += "Instructions: " + instructCount + "\n";
-        process += "CALCULATE: " + numCalculate + "\n";
-        process += "I/0: " + numIO + "\n";
+        //process += "CALCULATE: " + numCalculate + "\n";
+        //process += "I/0: " + numIO + "\n";
 
         if(isChild){
             process += "Is a Child" + "\n" + "\n";
