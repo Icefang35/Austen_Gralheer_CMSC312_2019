@@ -7,6 +7,7 @@ public class ProcessGenerator{
     Scheduler scheduler = new Scheduler();
     public volatile boolean running = true;
     public int processCount;
+    public int numScheduler;
 
     public ProcessGenerator(){
         //this.dispatcher = Dispatcher.getInstance();
@@ -91,11 +92,18 @@ public class ProcessGenerator{
                 }
             }
 
+            int priority = rand.nextInt(7) + 1;
+
             templateScanner.close();
             instructions = createInstructions(percentCalculate, percentIO, calcMax, calcMin, IOMax, IOMin, criticalSec);
-            process = new Process(type, instructions, runtime, memory, pID);
+            process = new Process(type, instructions, runtime, memory, pID, priority);
             jobDispatcher.setState(process.PCB, "NEW");
-            scheduler.shortJobFirst(process);
+            if(numScheduler == 1) {
+                scheduler.shortJobFirst(process);
+            }
+            if(numScheduler == 2){
+                scheduler.Priority(process);
+            }
             processes.add(process);
             pID++;
             runtime = 0;

@@ -6,8 +6,8 @@ public class Process extends Thread {
     ProcessControlBlock PCB;
     Dispatcher dispatcher;
 
-    public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID){
-        PCB = new ProcessControlBlock("NEW", jType, instructs, runtime, memory, pID);
+    public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID, int priority){
+        PCB = new ProcessControlBlock("NEW", jType, priority, instructs, runtime, memory, pID);
         this.dispatcher = Dispatcher.getInstance();
     }
 
@@ -31,6 +31,9 @@ public class Process extends Thread {
     public void usePipe(){
         PCB.usesPipe = true;
     }
+    public void useSocket(){
+        PCB.usesSocket = true;
+    }
 
     public String toString(){
         String process = PCB.toString();
@@ -51,6 +54,10 @@ public class Process extends Thread {
 
     public String getProcessState(){
         return PCB.processState;
+    }
+
+    public int getProcessPriority(){
+        return PCB.priority;
     }
 
 }

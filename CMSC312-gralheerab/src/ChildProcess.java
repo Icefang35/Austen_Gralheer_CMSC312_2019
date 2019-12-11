@@ -3,7 +3,7 @@ import java.util.Queue;
 public class ChildProcess extends Process{
 
     public ChildProcess(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID, int ParentID) {
-        super(jType, instructs, runtime, memory, pID);
+        super(jType, instructs, runtime, memory, pID, 0);
         PCB = new ProcessControlBlock("NEW", jType, instructs, runtime, memory, pID, ParentID);
         PCB.isChild = true;
     }

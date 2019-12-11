@@ -23,6 +23,7 @@ public class Dispatcher {
     public static boolean mutexLock = false;
     public static int currentPage = 0;
     public static int ChildId = -1;
+    public static int schedule;
 
     public static Dispatcher getInstance(){
         if (single_instance == null){
@@ -41,13 +42,20 @@ public class Dispatcher {
 
         MMU = new MemoryManagementUnit();
 
-        for(int i = 0; i < processes.size(); i++){
-            System.out.println(processes.get(i).getPID() + " T=" + processes.get(i).getRuntime() + " M=" + processes.get(i).getMemory());
+        if(schedule == 1) {
+            for (int i = 0; i < processes.size(); i++) {
+                System.out.println(processes.get(i).getPID() + " T=" + processes.get(i).getRuntime() + " M=" + processes.get(i).getMemory());
+            }
+        } else if (schedule == 2){
+            for (int i = 0; i < processes.size(); i++) {
+                System.out.println(processes.get(i).getPID() + " P=" + processes.get(i).getProcessPriority() + " T=" + processes.get(i).getRuntime());
+            }
         }
-
         System.out.println();
 
-        processes.get(rand.nextInt(processes.size())).usePipe();
+        int communicate = rand.nextInt(processes.size());
+        processes.get(communicate).usePipe();
+        processes.get(communicate).useSocket();
 
         MMU.start();
 
@@ -62,6 +70,7 @@ public class Dispatcher {
                     }
                 }
             }
+
             Thread.sleep(500);
             if(rand.nextInt(100) > 80){
                 interrupt.interruptProcesses();
@@ -84,11 +93,11 @@ public class Dispatcher {
 
     public static void runJob(@NotNull Process process, boolean isChild) throws InterruptedException, IOException {
         ProcessControlBlock job = process.PCB;
+        PipeReaderProcess childReader = null;
         boolean hasChild = false;
 
         Queue<Instruction> instructions = job.instructions;
         Instruction instruction;
-        PipeReaderProcess childReader = null;
 
         int random = rand.nextInt(100);
 
@@ -112,6 +121,15 @@ public class Dispatcher {
 
             childReader.start();
             job.sendMessage(writer);
+            Thread.sleep(14);
+            childReader.reading = false;
+        }
+
+        if (job.usesSocket){
+            SocketServerProcess childServer = new SocketServerProcess();
+            childServer.start();
+
+            job.writeToSocket();
         }
 
         if(hasChild){
@@ -189,10 +207,6 @@ public class Dispatcher {
                     }
                 }
             }
-        }
-
-        if(job.usesPipe){
-            childReader.reading = false;
         }
 
         MMU.virtual.DeallocateFrames(job);

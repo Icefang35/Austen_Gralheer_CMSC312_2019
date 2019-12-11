@@ -1,8 +1,6 @@
-import javafx.scene.Parent;
-
-import java.io.PipedWriter;
+import java.io.*;
+import java.net.Socket;
 import java.util.Queue;
-import java.util.Scanner;
 
 //Class for individual ProcessControlBlocks containing all of the information for individual processes
 public class ProcessControlBlock {
@@ -19,10 +17,11 @@ public class ProcessControlBlock {
     int priority;
     boolean isChild = false;
     boolean usesPipe = false;
+    boolean usesSocket = false;
     Queue<Instruction> instructions;
     PageTable pages;
 
-    public ProcessControlBlock(String pState, String jType, Queue<Instruction> instructs, int time, int mem, int pID){
+    public ProcessControlBlock(String pState, String jType, int priority, Queue<Instruction> instructs, int time, int mem, int pID){
         processState = pState;
         jobType = jType;
         instructions = instructs;
@@ -30,7 +29,7 @@ public class ProcessControlBlock {
         memory = mem;
         pId = pID;
         //programCounter = pCounter;
-        //this.priority = priority;
+        this.priority = priority;
 
         instructCount = instructions.size();
         pages = new PageTable(memory);
@@ -52,12 +51,25 @@ public class ProcessControlBlock {
 
     public void sendMessage(PipedWriter writer){
         try{
-            writer.write("This message was sent through a pipeline by Process: " + pId + "! \n");
+            writer.write("Pipeline ");
             writer.flush();
+            writer.close();
         }
         catch(Exception e){
             System.out.println("Sending message to pipe failed.");
         }
+    }
+
+    public void writeToSocket() throws IOException {
+        Socket sock = new Socket("localhost", 7777);
+
+        OutputStream output = sock.getOutputStream();
+        DataOutputStream dataOutput = new DataOutputStream(output);
+
+        dataOutput.writeUTF("Socket");
+        dataOutput.flush();
+        dataOutput.close();
+        sock.close();
     }
 
     private void countInstructs(){
@@ -77,7 +89,7 @@ public class ProcessControlBlock {
     public String toString(){
 
 
-        //TODO: add program counter, and priority
+        //TODO: add program counter
         String process =jobType + " " + pId + "\n" + processState + "\n";
 
         process += "Runtime: " + runtime + "\n";

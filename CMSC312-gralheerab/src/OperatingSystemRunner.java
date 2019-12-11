@@ -12,6 +12,10 @@ public class OperatingSystemRunner {
         while(running) {
             System.out.print("Number of processes to generate: ");
             generator.processCount = user.nextInt();
+            System.out.print("Pick a scheduler: 1-SJF 2-Priority ");
+            int schedule = user.nextInt();
+            dispatcher.schedule = schedule;
+            generator.numScheduler = schedule;
             generator.createProcesses();
             System.out.print("Run Processes? (Y/N): ");
             nextStep = user.next();

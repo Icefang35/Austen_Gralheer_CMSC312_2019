@@ -22,11 +22,12 @@ public class PipeReaderProcess extends Thread {
         }
     }
 
-    public void readMessage() throws IOException {
+    public void readMessage() throws IOException, InterruptedException {
         while(reading){
             char c = (char) reader.read();
             if (c != -1) {
                 System.out.print(c);
+                Thread.sleep(0, 1);
             }
         }
     }
