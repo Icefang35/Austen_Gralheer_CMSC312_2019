@@ -63,10 +63,10 @@ public class Dispatcher {
 
         while(processes.isEmpty() == false) {
             if(processesContainState("READY")) {
-                for (Process process : processes) {
-                    if (process.getProcessState().contains("READY")) {
+                for (int i = 0; i < processes.size() && i < 50; i++) {
+                    if (processes.get(i).getProcessState().contains("READY")) {
                         //System.out.println(process.getPID());
-                        process.start();
+                        processes.get(i).start();
                     }
                 }
             }
