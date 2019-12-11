@@ -14,11 +14,11 @@ public class PipeReaderProcess extends Thread {
     public void run()
     {
         try{
-            System.out.println("Pipeline Open");
+            //System.out.println("Pipeline Open");
             readMessage();
         }
         catch (Exception e){
-            System.out.println("Pipeline Closed");
+            //System.out.println("Pipeline Closed");
         }
     }
 

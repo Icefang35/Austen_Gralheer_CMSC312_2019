@@ -14,6 +14,7 @@ public class ProcessGenerator{
 
     int runtime;
     int memory;
+    int pID = 0;
 
     public void createProcesses() throws FileNotFoundException, InterruptedException {
         //Scanner user = new Scanner(System.in);
@@ -32,7 +33,6 @@ public class ProcessGenerator{
         int percentIO = 0;
         int IOMax = 0;
         int IOMin = 0;
-        int pID = 0;
         Queue<Instruction> instructions;
         Dispatcher jobDispatcher = Dispatcher.getInstance();
 
@@ -103,7 +103,7 @@ public class ProcessGenerator{
         }
 
         jobDispatcher.processes = scheduler.getSchedule();
-        jobDispatcher.runJobs();
+        //jobDispatcher.runJobs();
         //running = false;
     }
 

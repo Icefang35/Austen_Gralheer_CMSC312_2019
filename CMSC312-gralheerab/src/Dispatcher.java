@@ -18,10 +18,10 @@ public class Dispatcher {
     public static ArrayList<Process> processes = new ArrayList<>();
     public static ArrayList<ChildProcess> childProcesses = new ArrayList<>();
     public static Random rand = new Random();
-    public static MemoryManagementUnit MMU = new MemoryManagementUnit();
+    public static MemoryManagementUnit MMU;
     public static boolean mutexLock = false;
     public static int currentPage = 0;
-    public static int ChildId = 0;
+    public static int ChildId = -1;
 
     public static Dispatcher getInstance(){
         if (single_instance == null){
@@ -37,6 +37,8 @@ public class Dispatcher {
     }
 
     public static void runJobs() throws InterruptedException{
+
+        MMU = new MemoryManagementUnit();
 
         for(int i = 0; i < processes.size(); i++){
             System.out.println(processes.get(i).getPID() + " T=" + processes.get(i).getRuntime() + " M=" + processes.get(i).getMemory());
@@ -73,7 +75,7 @@ public class Dispatcher {
     }
 
     public static boolean processesContainState(final String status){
-        return processes.stream().filter(o -> o.getProcessState().equals(status)).findFirst().isPresent();
+        return processes.stream().filter(o -> o.getProcessState().contains(status)).findFirst().isPresent();
     }
 
     public static void runJob(@NotNull Process process, boolean isChild) throws InterruptedException, IOException {
@@ -87,12 +89,12 @@ public class Dispatcher {
         int random = rand.nextInt(100);
 
         if(!isChild) {
-            if (random < 25) {
+            if (random < 30) {
                 hasChild = true;
             }
         } else {
-            if(random < 15) {
-
+            if(random < 25) {
+                hasChild = true;
             }
         }
 
@@ -119,8 +121,8 @@ public class Dispatcher {
                 instruction = instructions.peek();
                 if(currentIndex == childIndex){
                     setState(job, "WAIT");
-                    ChildProcess childProcess = new ChildProcess(job.jobType, forChild, job.runtime, job.memory, ChildId, job.pId);
                     ChildId++;
+                    ChildProcess childProcess = new ChildProcess(job.jobType, forChild, job.runtime, job.memory, ChildId, job.pId);
                     childProcesses.add(childProcess);
                     MMU.physical.DeallocateFrames(job);
                     childProcess.start();
@@ -201,13 +203,15 @@ public class Dispatcher {
 
     public static void checkVMemory(){
         ProcessControlBlock PCB;
-        for (int i = 0; i < processes.size(); i++){
+        for (int i = 0; i < processes.size(); i++) {
             PCB = processes.get(i).PCB;
-            if (PCB.memory < MMU.virtual.CheckMemory()){
-                if(MMU.virtual.AllocateFrames(PCB.memory, PCB)) {
-                    setState(processes.get(i).PCB, "READY");
+            //if(!PCB.processState.contains("EXIT")) {
+                if (PCB.memory < MMU.virtual.CheckMemory()) {
+                    if (MMU.virtual.AllocateFrames(PCB.memory, PCB)) {
+                        setState(processes.get(i).PCB, "READY");
+                    }
                 }
-            }
+            //}
         }
     }
 
