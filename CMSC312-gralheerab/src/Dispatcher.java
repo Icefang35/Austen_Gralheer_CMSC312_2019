@@ -19,6 +19,7 @@ public class Dispatcher {
     public static ArrayList<ChildProcess> childProcesses = new ArrayList<>();
     public static Random rand = new Random();
     public static MemoryManagementUnit MMU;
+    public static InterruptHandler interrupt = new InterruptHandler();
     public static boolean mutexLock = false;
     public static int currentPage = 0;
     public static int ChildId = -1;
@@ -62,6 +63,9 @@ public class Dispatcher {
                 }
             }
             Thread.sleep(500);
+            if(rand.nextInt(100) > 80){
+                interrupt.interruptProcesses();
+            }
 
             if(!processes.isEmpty()) {
                 if (!processesContainState("EXIT") && !processesContainState("RUN") && !processesContainState("WAIT")) {

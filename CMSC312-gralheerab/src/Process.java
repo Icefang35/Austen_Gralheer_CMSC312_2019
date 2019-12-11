@@ -24,6 +24,10 @@ public class Process extends Thread {
         }
     }
 
+    public void interrupt(InterruptHandler interrupt) throws InterruptedException {
+        interrupt.join();
+    }
+
     public void usePipe(){
         PCB.usesPipe = true;
     }
