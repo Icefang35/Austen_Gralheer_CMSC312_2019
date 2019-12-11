@@ -1,3 +1,5 @@
+import javafx.scene.Parent;
+
 import java.io.PipedWriter;
 import java.util.Queue;
 import java.util.Scanner;
@@ -9,6 +11,7 @@ public class ProcessControlBlock {
     int runtime;
     int memory;
     int pId;
+    int ParentId;
     int instructCount;
     int numCalculate = 0;
     int numIO = 0;
@@ -32,6 +35,19 @@ public class ProcessControlBlock {
         instructCount = instructions.size();
         pages = new PageTable(memory);
         //countInstructs();
+    }
+    public ProcessControlBlock(String pState, String jType, Queue<Instruction> instructs, int time, int mem, int pID, int ParentID){
+        processState = pState;
+        jobType = jType;
+        instructions = instructs;
+        runtime = time;
+        memory = mem;
+        pId = pID;
+        ParentId = ParentID;
+
+        instructCount = instructions.size();
+        pages = new PageTable(memory);
+        isChild = true;
     }
 
     public void sendMessage(PipedWriter writer){
@@ -71,7 +87,7 @@ public class ProcessControlBlock {
         //process += "I/0: " + numIO + "\n";
 
         if(isChild){
-            process += "Is a Child" + "\n" + "\n";
+            process += "Is a Child of Process " + ParentId + "\n";
         } else {
             process += "\n";
         }

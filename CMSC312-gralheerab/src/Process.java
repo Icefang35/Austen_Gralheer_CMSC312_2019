@@ -5,10 +5,9 @@ import java.util.Queue;
 public class Process extends Thread {
     ProcessControlBlock PCB;
     Dispatcher dispatcher;
-    PipedWriter writer;
 
     public Process(String jType, Queue<Instruction> instructs, int runtime, int memory, int pID){
-        PCB = new ProcessControlBlock("new", jType, instructs, runtime, memory, pID);
+        PCB = new ProcessControlBlock("NEW", jType, instructs, runtime, memory, pID);
         this.dispatcher = Dispatcher.getInstance();
     }
 
@@ -16,7 +15,8 @@ public class Process extends Thread {
     public void run(){
         try{
             dispatcher.setState(PCB, "RUN");
-            dispatcher.runJob(this);
+            dispatcher.runJob(this, false);
+            System.out.println("Finished Process " + getPID() + "\n");
             //dispatcher.setState(PCB, "EXIT");
         }
         catch(Exception e){
@@ -24,9 +24,6 @@ public class Process extends Thread {
         }
     }
 
-    public void setChild(){
-        PCB.isChild = true;
-    }
     public void usePipe(){
         PCB.usesPipe = true;
     }

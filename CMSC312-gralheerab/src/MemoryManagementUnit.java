@@ -1,5 +1,10 @@
+import java.util.Random;
+
 public class MemoryManagementUnit extends Thread{
-    boolean running;
+    public volatile boolean running;
+    public Random rand = new Random();
+    public VirtualMemory virtual = new VirtualMemory(rand.nextInt(1000) + 1000);
+    public PhysicalMemory physical = new PhysicalMemory(virtual.size / 5);
     Dispatcher dispatcher;
 
     public MemoryManagementUnit(){
@@ -18,7 +23,7 @@ public class MemoryManagementUnit extends Thread{
         Frame lastRecentV = null;
         Frame lastRecentP = null;
 
-        for(Frame frame : dispatcher.virtual.memory){
+        for(Frame frame : virtual.memory){
             if(frame.pID != -1) {
                 if (frame.secondChance == 0) {
                     frame.secondChance = 1;
@@ -34,10 +39,10 @@ public class MemoryManagementUnit extends Thread{
             }
         }
         if(lastRecentV != null) {
-            dispatcher.virtual.DeallocateFrame(lastRecentV.address);
+            virtual.DeallocateFrame(lastRecentV.address);
         }
 
-        for(Frame frame : dispatcher.physical.memory){
+        for(Frame frame : physical.memory){
             if(frame.pID != -1) {
                 if (frame.secondChance == 0) {
                     frame.secondChance = 1;
@@ -53,7 +58,7 @@ public class MemoryManagementUnit extends Thread{
             }
         }
         if(lastRecentP != null) {
-            dispatcher.physical.DeallocateFrame(lastRecentP.address);
+            physical.DeallocateFrame(lastRecentP.address);
         }
     }
 }

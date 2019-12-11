@@ -5,7 +5,7 @@ import java.util.*;
 public class ProcessGenerator{
     Random rand = new Random();
     Scheduler scheduler = new Scheduler();
-    boolean running = true;
+    public volatile boolean running = true;
     public int processCount;
 
     public ProcessGenerator(){
@@ -14,17 +14,6 @@ public class ProcessGenerator{
 
     int runtime;
     int memory;
-
-    public void run(){
-        try{
-            while(running) {
-                createProcesses();
-            }
-        }
-        catch(Exception e){
-            System.out.println("Process creation failed");
-        }
-    }
 
     public void createProcesses() throws FileNotFoundException, InterruptedException {
         //Scanner user = new Scanner(System.in);
@@ -43,7 +32,7 @@ public class ProcessGenerator{
         int percentIO = 0;
         int IOMax = 0;
         int IOMin = 0;
-        int pID = 1;
+        int pID = 0;
         Queue<Instruction> instructions;
         Dispatcher jobDispatcher = Dispatcher.getInstance();
 
@@ -115,7 +104,7 @@ public class ProcessGenerator{
 
         jobDispatcher.processes = scheduler.getSchedule();
         jobDispatcher.runJobs();
-        running = false;
+        //running = false;
     }
 
     //randomly sets the instruction type and runtime for each individual instruction
@@ -142,7 +131,7 @@ public class ProcessGenerator{
         }
 
         for(int i = 0; i < instructionCount; i++){
-            percentInstruction = rand.nextInt(99) + 1;
+            percentInstruction = rand.nextInt(100) + 1;
 
             if(percentInstruction <= calculate){
                 instructionType = "Calculate";
@@ -151,7 +140,7 @@ public class ProcessGenerator{
                 runtime += instructionTime;
                 memory += instructionMemory;
             }
-            else if(percentInstruction > calculate && percentInstruction <= (calculate + IO)){
+            else if(percentInstruction <= (calculate + IO)){
                 instructionType = "I/O";
                 instructionMemory = rand.nextInt(randIO) + IOMin;
                 instructionTime = 50;

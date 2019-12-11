@@ -4,7 +4,7 @@ import java.io.PipedReader;
 public class PipeReaderProcess extends Thread {
     PipedReader reader;
     int parentID;
-    boolean reading = true;
+    public volatile boolean reading = true;
 
     public PipeReaderProcess(int parentID, PipedReader reader){
         this.parentID = parentID;
@@ -14,10 +14,11 @@ public class PipeReaderProcess extends Thread {
     public void run()
     {
         try{
+            System.out.println("Pipeline Open");
             readMessage();
         }
         catch (Exception e){
-            System.out.println("Pipe Reader Failed");
+            System.out.println("Pipeline Closed");
         }
     }
 

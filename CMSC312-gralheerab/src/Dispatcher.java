@@ -1,3 +1,5 @@
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
@@ -13,14 +15,13 @@ import java.util.Random;
 public class Dispatcher {
 
     private static Dispatcher single_instance = null;
-    public static ArrayList<Process> processes = new ArrayList<Process>();
+    public static ArrayList<Process> processes = new ArrayList<>();
+    public static ArrayList<ChildProcess> childProcesses = new ArrayList<>();
     public static Random rand = new Random();
-    public static VirtualMemory virtual = new VirtualMemory(rand.nextInt(1000) + 1000);
-    public static PhysicalMemory physical = new PhysicalMemory(virtual.size / 5);
+    public static MemoryManagementUnit MMU = new MemoryManagementUnit();
     public static boolean mutexLock = false;
     public static int currentPage = 0;
-
-    public static MemoryManagementUnit MMU = new MemoryManagementUnit();
+    public static int ChildId = 0;
 
     public static Dispatcher getInstance(){
         if (single_instance == null){
@@ -53,18 +54,21 @@ public class Dispatcher {
             if(processesContainState("READY")) {
                 for (Process process : processes) {
                     if (process.getProcessState().contains("READY")) {
-                        System.out.println(process.getPID());
+                        //System.out.println(process.getPID());
                         process.start();
                     }
                 }
             }
-            Thread.sleep(1000);
+            Thread.sleep(500);
 
-            if(!processesContainState("EXIT") && !processesContainState("RUN") && !processesContainState("WAIT")){
-                checkVMemory();
+            if(!processes.isEmpty()) {
+                if (!processesContainState("EXIT") && !processesContainState("RUN") && !processesContainState("WAIT")) {
+                    checkVMemory();
+                }
             }
         }
 
+        System.out.println("No more processes");
         MMU.running = false;
     }
 
@@ -72,18 +76,24 @@ public class Dispatcher {
         return processes.stream().filter(o -> o.getProcessState().equals(status)).findFirst().isPresent();
     }
 
-    public static void runJob(Process process) throws InterruptedException, IOException {
-        boolean hasChild = false;
+    public static void runJob(@NotNull Process process, boolean isChild) throws InterruptedException, IOException {
         ProcessControlBlock job = process.PCB;
-//        boolean usesPipe = false;
+        boolean hasChild = false;
 
         Queue<Instruction> instructions = job.instructions;
         Instruction instruction;
         PipeReaderProcess childReader = null;
 
         int random = rand.nextInt(100);
-        if(random < 25){
-            hasChild = true;
+
+        if(!isChild) {
+            if (random < 25) {
+                hasChild = true;
+            }
+        } else {
+            if(random < 15) {
+
+            }
         }
 
         if (job.usesPipe){
@@ -109,13 +119,15 @@ public class Dispatcher {
                 instruction = instructions.peek();
                 if(currentIndex == childIndex){
                     setState(job, "WAIT");
-                    Process childProcess = new Process(job.jobType, forChild, job.runtime, job.memory, job.pId);
-                    physical.DeallocateFrames(job);
-                    childProcess.setChild();
+                    ChildProcess childProcess = new ChildProcess(job.jobType, forChild, job.runtime, job.memory, ChildId, job.pId);
+                    ChildId++;
+                    childProcesses.add(childProcess);
+                    MMU.physical.DeallocateFrames(job);
                     childProcess.start();
                     childProcess.join();
                     setState(job, "RUN");
                     System.out.println("Child terminated\n");
+                    currentIndex++;
                 }
 
                 if (instruction.isCritical) {
@@ -123,7 +135,7 @@ public class Dispatcher {
                         if(checkPMemory(instruction, job)) {
                             mutexLock = true;
                             //System.out.println("Mutex locked");
-                            System.out.println(job.pId + " " + instruction.toString());
+                            //System.out.println(job.pId + " " + instruction.toString());
                             Thread.sleep(instruction.time);
                             mutexLock = false;
                             //System.out.println("Mutex un-locked");
@@ -131,10 +143,12 @@ public class Dispatcher {
                             //physical.DeallocateFrames(job);
                             currentIndex++;
                         }
+                    } else {
+                        Thread.sleep(1);
                     }
                 } else {
                     if(checkPMemory(instruction, job)) {
-                        System.out.println(job.pId + " " + instruction.toString());
+                        //System.out.println(job.pId + " " + instruction.toString());
                         Thread.sleep(instruction.time);
                         instructions.remove();
                         //physical.DeallocateFrames(job);
@@ -150,7 +164,7 @@ public class Dispatcher {
                         if(checkPMemory(instruction, job)) {
                             mutexLock = true;
                             //System.out.println("Mutex locked");
-                            System.out.println(job.pId + " " + instruction.toString());
+                            //System.out.println(job.pId + " " + instruction.toString());
                             Thread.sleep(instruction.time);
                             mutexLock = false;
                             //System.out.println("Mutex un-locked");
@@ -158,11 +172,11 @@ public class Dispatcher {
                             //physical.DeallocateFrames(job);
                         }
                     } else {
-                        //System.out.println("Blocked by mutex lock");
+                        Thread.sleep(1);
                     }
                 } else {
                     if(checkPMemory(instruction, job)) {
-                        System.out.println(job.pId + " " + instruction.toString());
+                        //System.out.println(job.pId + " " + instruction.toString());
                         Thread.sleep(instruction.time);
                         instructions.remove();
                         //physical.DeallocateFrames(job);
@@ -172,21 +186,25 @@ public class Dispatcher {
         }
 
         if(job.usesPipe){
-            childReader.stopReading();
+            childReader.reading = false;
         }
 
-        //virtual.DeallocateFrames(job.pId);
+        MMU.virtual.DeallocateFrames(job);
         setState(job, "EXIT");
-        System.out.print(process.toString());
-        processes.remove(process);
+        //System.out.print(process.toString());
+        if(!isChild) {
+            processes.remove(process);
+        } else {
+            childProcesses.remove(process);
+        }
     }
 
     public static void checkVMemory(){
         ProcessControlBlock PCB;
         for (int i = 0; i < processes.size(); i++){
             PCB = processes.get(i).PCB;
-            if (PCB.memory < virtual.CheckMemory()){
-                if(virtual.AllocateFrames(PCB.memory, PCB.pId)) {
+            if (PCB.memory < MMU.virtual.CheckMemory()){
+                if(MMU.virtual.AllocateFrames(PCB.memory, PCB)) {
                     setState(processes.get(i).PCB, "READY");
                 }
             }
@@ -194,8 +212,9 @@ public class Dispatcher {
     }
 
     public static boolean checkPMemory(Instruction instruction, ProcessControlBlock job){
-        if (instruction.memory < physical.CheckMemory()){
-            physical.AllocateFrames(instruction.memory, job);
+        if (instruction.memory < MMU.physical.CheckMemory()){
+            MMU.physical.AllocateFrames(instruction.memory, job);
+            instruction.hasAllocated = true;
             return true;
         }
         return false;
